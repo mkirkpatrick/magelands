@@ -46,7 +46,7 @@ MonoBehaviour:
   lands: []
   landPrefab: {fileID: 9134694514062151134, guid: 98e63fe99238201478bb13a7e93bf91e,
     type: 3}
-  groundPrefab: {fileID: 5117965801035087603, guid: 5ebefd132b53a6b4289a58c4a262d8c1,
+  groundPrefab: {fileID: 4572397641463292809, guid: 95786757f0a5f374b9db63602674d494,
     type: 3}
 --- !u!1 &6614544686311128026
 GameObject:

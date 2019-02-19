@@ -20,7 +20,6 @@ public class LandController : MonoBehaviour
 
     public GameObject LoadLand(Land landData)
     {
-        Debug.Log("Lands");
         GameObject newLand = Instantiate(landPrefab, landData.worldPosition, Quaternion.identity, this.transform);
         newLand.GetComponent<Land_gameobj>().landData = landData;
 
@@ -29,9 +28,11 @@ public class LandController : MonoBehaviour
         return newLand;
     }
     public void LoadGroundPieces(GameObject newLand) {
+        float xHalf = newLand.GetComponent<Land_gameobj>().landData.xLength / 2;
+        float yHalf = newLand.GetComponent<Land_gameobj>().landData.yLength / 2;
 
         foreach (GroundPiece ground in newLand.GetComponent<Land_gameobj>().landData.groundPieces) {
-            GameObject newGround = Instantiate(groundPrefab, new Vector3(ground.xPostion, 0, ground.yPosition), Quaternion.identity, newLand.transform);
+            GameObject newGround = Instantiate(groundPrefab, new Vector3(ground.xPostion - xHalf, 0, ground.yPosition - yHalf), Quaternion.identity, newLand.transform);
         }
     }
 }

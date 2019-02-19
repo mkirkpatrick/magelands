@@ -20,6 +20,7 @@ public class LandController : MonoBehaviour
 
     public GameObject LoadLand(Land landData)
     {
+        Debug.Log("Lands");
         GameObject newLand = Instantiate(landPrefab, landData.worldPosition, Quaternion.identity, this.transform);
         newLand.GetComponent<Land_gameobj>().landData = landData;
 

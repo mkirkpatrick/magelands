@@ -18,6 +18,7 @@ public class GameController : MonoBehaviour {
             Destroy(this);
     }
     void Start() {
-
+        landController.lands = new Land[5];
+        landController.lands[0] = new Land(new Vector3(0, 0, 0), 8, 8);
     }
 }

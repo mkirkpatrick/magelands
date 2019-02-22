@@ -32,7 +32,8 @@ public class LandController : MonoBehaviour
         float yHalf = newLand.GetComponent<Land_gameobj>().landData.yLength / 2;
 
         foreach (GroundPiece ground in newLand.GetComponent<Land_gameobj>().landData.groundPieces) {
-            GameObject newGround = Instantiate(groundPrefab, new Vector3(ground.xPostion - xHalf, 0, ground.yPosition - yHalf), Quaternion.identity, newLand.transform);
+            GameObject newGround = Instantiate(groundPrefab, newLand.transform);
+            newGround.transform.localPosition = new Vector3(ground.xPostion - xHalf, 0, ground.yPosition - yHalf);
         }
     }
 }

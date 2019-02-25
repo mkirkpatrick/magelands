@@ -5,10 +5,12 @@ using UnityEngine;
 public class GroundPiece_gameobj : MonoBehaviour
 {
     public GroundPiece groundPieceData;
-    
-    // Start is called before the first frame update
+
+
     void Start()
     {
+        Debug.Log(groundPieceData.groundType);
+        GameObject newTop = Instantiate(GameController.instance.database.groundDatabase.GetGroundTopper(groundPieceData.groundType), this.transform);
         
     }
 

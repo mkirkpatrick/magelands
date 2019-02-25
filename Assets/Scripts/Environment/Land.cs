@@ -23,7 +23,7 @@ public class Land {
         {
             for (int y = 0; y < ySize; y++)
             {
-                groundPieces[x, y] = new GroundPiece(x,y);
+                groundPieces[x, y] = new GroundPiece(x,y, GroundPiece.GroundType.Forest_Grass);
             }
         }
     }

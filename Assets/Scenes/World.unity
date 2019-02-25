@@ -330,45 +330,5 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6614544685989962513, guid: 83b34fdda500ca745b762b8ba055b3e8,
-        type: 3}
-      propertyPath: lands.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6614544685989962513, guid: 83b34fdda500ca745b762b8ba055b3e8,
-        type: 3}
-      propertyPath: lands.Array.data[0].xSize
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 6614544685989962513, guid: 83b34fdda500ca745b762b8ba055b3e8,
-        type: 3}
-      propertyPath: lands.Array.data[0].ySize
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 6614544685989962513, guid: 83b34fdda500ca745b762b8ba055b3e8,
-        type: 3}
-      propertyPath: lands.Array.data[0].xLength
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 6614544685989962513, guid: 83b34fdda500ca745b762b8ba055b3e8,
-        type: 3}
-      propertyPath: lands.Array.data[0].yLength
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 6614544685989962513, guid: 83b34fdda500ca745b762b8ba055b3e8,
-        type: 3}
-      propertyPath: lands.Array.data[0].worldPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6614544685989962513, guid: 83b34fdda500ca745b762b8ba055b3e8,
-        type: 3}
-      propertyPath: lands.Array.data[0].worldPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6614544685989962513, guid: 83b34fdda500ca745b762b8ba055b3e8,
-        type: 3}
-      propertyPath: lands.Array.data[0].worldPosition.z
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 83b34fdda500ca745b762b8ba055b3e8, type: 3}

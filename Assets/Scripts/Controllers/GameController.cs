@@ -5,6 +5,9 @@ using UnityEngine;
 public class GameController : MonoBehaviour {
 
     public static GameController instance = null;
+
+    public DatabaseController database;
+
     public LandController landController;
 
     // Use this for initialization

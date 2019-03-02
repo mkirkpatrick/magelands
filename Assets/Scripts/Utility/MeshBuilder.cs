@@ -5,7 +5,10 @@ using UnityEngine;
 public static class MeshBuilder
 {
 
-    public Vector3[] BuildGroundMesh() {
+    public static Vector3[] BuildGroundMesh() {
+        Vector3[] newMesh = new Vector3[1];
+
+        return newMesh;
     }
 
 

@@ -14,7 +14,7 @@ public class Land {
     private int ySize;
     public int YSize { get { return ySize; } private set { ySize = value; } }
 
-    public GroundPiece[,] groundPieces;
+    public Chunk[,] chunks;
 
     public Land(Vector3 _worldPosition, int _xSize, int _ySize) {
 
@@ -22,13 +22,13 @@ public class Land {
         xSize = _xSize;
         ySize = _ySize;
 
-        groundPieces = new GroundPiece[xSize, ySize];
+        chunks = new Chunk[xSize, ySize];
 
         for (int x = 0; x < xSize; x++)
         {
             for (int y = 0; y < ySize; y++)
             {
-                groundPieces[x, y] = new GroundPiece(x,y, GroundPiece.GroundType.Forest_Grass);
+                chunks[x, y] = new Chunk(x,y);
             }
         }
     }

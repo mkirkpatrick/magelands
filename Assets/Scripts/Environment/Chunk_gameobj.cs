@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Land_gameobj : MonoBehaviour
+public class Chunk_gameobj : MonoBehaviour
 {
-    public Land landData;
-    public Chunk_gameobj[,] chunks;
-    
+
+    public Chunk chunkData;
+
     // Start is called before the first frame update
     void Start()
     {

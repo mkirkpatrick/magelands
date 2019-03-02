@@ -18,22 +18,23 @@ public class LandController : MonoBehaviour
         }
     }
 
-    public GameObject LoadLand(Land landData)
+    public GameObject LoadLand(Land _landData)
     {
-        GameObject newLand = Instantiate(landPrefab, landData.worldPosition, Quaternion.identity, this.transform);
-        newLand.GetComponent<Land_gameobj>().landData = landData;
+        GameObject newLand = Instantiate(landPrefab, _landData.worldPosition, Quaternion.identity, this.transform);
+        newLand.GetComponent<Land_gameobj>().landData = _landData;
 
         LoadGroundPieces(newLand);
 
         return newLand;
     }
-    public void LoadGroundPieces(GameObject newLand) {
-        float xHalf = newLand.GetComponent<Land_gameobj>().landData.xLength / 2;
-        float yHalf = newLand.GetComponent<Land_gameobj>().landData.yLength / 2;
+    public void LoadGroundPieces(GameObject _newLand) {
+        float xHalf = _newLand.GetComponent<Land_gameobj>().landData.XSize / 2;
+        float yHalf = _newLand.GetComponent<Land_gameobj>().landData.YSize / 2;
 
-        foreach (GroundPiece ground in newLand.GetComponent<Land_gameobj>().landData.groundPieces) {
-            GameObject newGround = Instantiate(groundPrefab, newLand.transform);
-            newGround.transform.localPosition = new Vector3(ground.xPostion - xHalf, 0, ground.yPosition - yHalf);
+        foreach (GroundPiece _groundData in _newLand.GetComponent<Land_gameobj>().landData.groundPieces) {
+            GameObject newGround = Instantiate(groundPrefab, _newLand.transform);
+            newGround.GetComponent<GroundPiece_gameobj>().groundPieceData = _groundData;
+            newGround.transform.localPosition = new Vector3(_groundData.xPostion - xHalf, 0, _groundData.yPosition - yHalf);
         }
     }
 }

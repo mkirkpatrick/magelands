@@ -6,17 +6,13 @@ public class GroundPiece_gameobj : MonoBehaviour
 {
     public GroundPiece groundPieceData;
 
-
     void Start()
     {
-        Debug.Log(groundPieceData.groundType);
-        GameObject newTop = Instantiate(GameController.instance.database.groundDatabase.GetGroundTopper(groundPieceData.groundType), this.transform);
-        
+        UpdateGroundPieceObject();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    public void UpdateGroundPieceObject() {
+        GameObject newGround = Instantiate(GameController.instance.database.groundDatabase.GetGroundPiece_GO(groundPieceData.groundObjectID), this.transform);
+        GameObject newTopper = Instantiate( GameController.instance.database.groundDatabase.GetTopper_GO( groundPieceData.topperObjectID ), this.transform);
     }
 }

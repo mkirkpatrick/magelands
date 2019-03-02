@@ -6,16 +6,21 @@ using UnityEngine;
 public class Land {
 
     public Vector3 worldPosition;
-    public int xLength;
-    public int yLength;
+
+    [SerializeField]
+    private int xSize;
+    public int XSize { get { return xSize; } private set { xSize = value; } }
+    [SerializeField]
+    private int ySize;
+    public int YSize { get { return ySize; } private set { ySize = value; } }
 
     public GroundPiece[,] groundPieces;
 
-    public Land(Vector3 position, int xSize, int ySize) {
+    public Land(Vector3 _worldPosition, int _xSize, int _ySize) {
 
-        worldPosition = position;
-        xLength = xSize;
-        yLength = ySize;
+        worldPosition = _worldPosition;
+        xSize = _xSize;
+        ySize = _ySize;
 
         groundPieces = new GroundPiece[xSize, ySize];
 

@@ -1,43 +1,40 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class GroundDatabase : MonoBehaviour
 {
-    public GameObject[] groundPieces;
-    public GameObject[] groundToppers;
-    
+    public Dictionary<string, GameObject> groundPieces;
+    public Dictionary<string, GameObject> groundToppers;
+
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        
-    }
+        groundPieces = new Dictionary<string, GameObject>();
+        groundToppers = new Dictionary<string, GameObject>();
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    public GameObject GetGroundTopper(GroundPiece.GroundType _groundType) {
-
-        GameObject newTopper = null;
-
-        switch (_groundType)
+        GameObject[] loadedGroundPieces = Resources.LoadAll( "Environment/GroundPieces", typeof(GameObject)).Cast<GameObject>().ToArray();
+        for (int i = 0; i < loadedGroundPieces.Length; i++)
         {
-            case GroundPiece.GroundType.Empty:
-                break;
-            case GroundPiece.GroundType.Forest_Grass:
-                newTopper = groundToppers[0];
-                break;
-            case GroundPiece.GroundType.Dirt:
-                newTopper = groundToppers[0];
-                break;
-            default:
-                newTopper = groundToppers[0];
-                break;
+            groundPieces.Add(loadedGroundPieces[i].name, loadedGroundPieces[i]);
         }
 
+        GameObject[] loadedGroundToppers = Resources.LoadAll("Environment/Toppers", typeof(GameObject)).Cast<GameObject>().ToArray();
+        for (int i = 0; i < loadedGroundToppers.Length; i++)
+        {
+            groundToppers.Add(loadedGroundToppers[i].name, loadedGroundToppers[i]);
+        }
+    }
+
+    public GameObject GetGroundPiece_GO(string _groundID) {
+        GameObject newGround = groundPieces[_groundID];
+        return newGround;
+    }
+
+    public GameObject GetTopper_GO(string _topperID) {
+
+        GameObject newTopper = groundToppers[_topperID];
         return newTopper;
     }
 }

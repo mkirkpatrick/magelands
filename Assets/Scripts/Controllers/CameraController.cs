@@ -3,57 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour {
+    public GameObject player;
 
-    public Transform player;
-    public Transform target;
+    //The offset of the camera to centrate the player in the X axis 
+    public float offsetX = -5;
+    //The offset of the camera to centrate the player in the Z axis 
+    public float offsetZ = 0;
+    //The maximum distance permited to the camera to be far from the player, its used to make a smooth movement 
+    public float maximumDistance = 2;
+    //The velocity of your player, used to determine que speed of the camera 
+    public float playerVelocity = 10;
 
-    public float distance = 5.0f;
-    public float xSpeed = 120.0f;
-    public float ySpeed = 120.0f;
+    private float movementX;
+    private float movementZ;
 
-    public float yMinLimit = -20f;
-    public float yMaxLimit = 80f;
-
-    public float distanceMin = .5f;
-    public float distanceMax = 15f;
-
-    //public float offsetX = 1f;
-
-    float x = 0.0f;
-    float y = 0.0f;
-    public float angle = 30;
-
-    // Use this for initialization
-    void Start() {
-    
-    }
-
-    void LateUpdate() {
-
-        angle -= Input.GetAxis("Mouse Y") * ySpeed * Time.deltaTime;
-
-        //Clamp data
-        angle = ClampAngle(angle, yMinLimit, yMaxLimit);
-        distance = Mathf.Clamp(distance, distanceMin, distanceMax);
-
-        float radians = Mathf.Deg2Rad * angle;
-
-        x = Mathf.Cos(radians) * -distance;
-        y = Mathf.Sin(radians) * distance;
-
-        Vector3 newPos = player.position + (player.forward * x) + (player.up * y);
-
-        transform.position = newPos;
-
-        transform.LookAt(target);
-    }
-
-    public static float ClampAngle(float angle, float min, float max)
+    // Update is called once per frame 
+    void Update()
     {
-        if (angle < -360F)
-            angle += 360F;
-        if (angle > 360F)
-            angle -= 360F;
-        return Mathf.Clamp(angle, min, max);
+        movementX = ((player.transform.position.x + offsetX - this.transform.position.x)) / maximumDistance;
+        movementZ = ((player.transform.position.z + offsetZ - this.transform.position.z)) / maximumDistance;
+        this.transform.position += new Vector3((movementX * playerVelocity * Time.deltaTime), 0, (movementZ * playerVelocity * Time.deltaTime));
     }
 }
+
+

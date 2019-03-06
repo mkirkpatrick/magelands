@@ -20,18 +20,16 @@ public class GroundPiece {
     public string groundObjectID = "Dirt";
     public string topperObjectID = "Grass";
 
-    public int xPostion;
+    public int xPosition;
     public int yPosition;
 
-    
     public int topperType;
 
-    public Vector3 location;
     public int rotation;
 
     public GroundPiece(Chunk _chunk, int _xPosition, int _yPosition, GroundType _groundType) {
         chunkParent = _chunk;
-        xPostion = _xPosition;
+        xPosition = _xPosition;
         yPosition = _yPosition;
         type = _groundType;
     }

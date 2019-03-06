@@ -48,7 +48,5 @@ public class LandController : MonoBehaviour
             newChunk.transform.localPosition = new Vector3((_chunk.xPosition * 16) - xHalf, 0, (_chunk.yPosition * 16) - yHalf);
         }
     }
-    public void LoadGroundPieces(GameObject _newChunk) {
-        
-    }
+
 }

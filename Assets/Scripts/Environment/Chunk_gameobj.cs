@@ -32,7 +32,7 @@ public class Chunk_gameobj : MonoBehaviour
         foreach (GroundPiece ground in chunkData.groundPieces)
         {
             GameObject obj = Instantiate(GameController.instance.database.groundDatabase.GetTopper_GO(ground.topperObjectID), this.transform);
-            obj.transform.localPosition += new Vector3(ground.xPostion, 0, ground.yPosition);
+            obj.transform.localPosition += new Vector3(ground.xPosition, 0, ground.yPosition);
             
 
             CombineInstance combine = new CombineInstance();

@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class MeshBuilder
-{
+public static class ChunkUtil {
 
-    public static Vector3[] BuildGroundMesh() {
-
+    public static void CombineChunkMesh()
+    {
+        /*
         List<CombineInstance> groundList = new List<CombineInstance>();
         List<CombineInstance> topperList = new List<CombineInstance>();
 
@@ -27,8 +27,6 @@ public static class MeshBuilder
         }
 
         meshFilter.sharedMesh.CombineMeshes(topperList.ToArray(), false);
-
+*/
     }
-
-
 }

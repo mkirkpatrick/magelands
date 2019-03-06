@@ -7,14 +7,7 @@ public class PlayerMovementController : MonoBehaviour
     private Rigidbody rb;
 
     public float moveSpeed;
-    public float rotateSpeed;
-
-    public float jumpHeight;
-
-    public float rotation;
-
-    public static bool isSwimming;
-
+    public Vector3 currentDestination;
 
     void Awake() {
         rb = GetComponent<Rigidbody>();
@@ -24,42 +17,26 @@ public class PlayerMovementController : MonoBehaviour
     void Start() {
     }
 
-    // Check for water
-    void OnTriggerEnter(Collider collider)
-    {
-        GameObject otherObj = collider.gameObject;
-
-        if (otherObj.name == "Water") {
-            rb.useGravity = false;
-            isSwimming = true;
-        }
-
-    }
-    void OnTriggerExit(Collider collider)
-    {
-        GameObject otherObj = collider.gameObject;
-        if (otherObj.name == "Water")
-        {
-            rb.useGravity = true;
-            isSwimming = false;
-        }
-    }
-
     // Update is called once per frame
     void Update()
     {
 
-        float moveHorizontal = Input.GetAxis("Horizontal");
-        float moveVertical = Input.GetAxis("Vertical");
+        if (Input.GetMouseButton(0))
+        {
+            RaycastHit hit;
+            LayerMask mask = LayerMask.GetMask("Ground");
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out hit, mask))
+            {
+                if (hit.collider.tag == "Ground")
+                    currentDestination = hit.point;
+            }  
+        }
 
-        rotation += rotateSpeed * Input.GetAxis("Mouse X") * Time.deltaTime;
-
-        transform.Translate(moveHorizontal * moveSpeed * Time.deltaTime, 0, moveVertical * moveSpeed * Time.deltaTime);
-        transform.eulerAngles = new Vector3(0f, rotation, 0f);
-
-        //Jumping
-        if ( Input.GetKeyDown("space") ) {
-            rb.velocity += new Vector3(0, jumpHeight, 0);
+        if (currentDestination != transform.position)
+        {
+            Vector3 newPosition = Vector3.MoveTowards(transform.position, currentDestination, moveSpeed * Time.deltaTime);
+            transform.position = newPosition;
         }
     }
 }

@@ -40,10 +40,12 @@ public class LandController : MonoBehaviour
             newChunk.AddComponent<Chunk_gameobj>();
             newChunk.GetComponent<Chunk_gameobj>().chunkData = _chunk;
             newChunk.transform.parent = _newLand.transform;
-            
-            newChunk.transform.localPosition = new Vector3((_chunk.xPosition * 16) - xHalf, 0, (_chunk.yPosition * 16) - yHalf);
 
             newChunk.GetComponent<Chunk_gameobj>().CombineMesh();
+            newChunk.AddComponent<MeshCollider>();
+            newChunk.tag = "Ground";
+            newChunk.layer = 8;
+            newChunk.transform.localPosition = new Vector3((_chunk.xPosition * 16) - xHalf, 0, (_chunk.yPosition * 16) - yHalf);
         }
     }
     public void LoadGroundPieces(GameObject _newChunk) {

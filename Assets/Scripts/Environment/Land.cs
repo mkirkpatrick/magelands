@@ -28,7 +28,7 @@ public class Land {
         {
             for (int y = 0; y < ySize; y++)
             {
-                chunks[x, y] = new Chunk(x,y);
+                chunks[x, y] = new Chunk(this, x, y);
             }
         }
     }

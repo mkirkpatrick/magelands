@@ -6,6 +6,8 @@ using System;
 [System.Serializable]
 public class GroundPiece {
 
+    Chunk chunkParent;
+
     public enum GroundType { Empty, Forest_Grass, Dirt };
  
     private GroundType type;
@@ -27,7 +29,8 @@ public class GroundPiece {
     public Vector3 location;
     public int rotation;
 
-    public GroundPiece(int _xPosition, int _yPosition, GroundType _groundType) {
+    public GroundPiece(Chunk _chunk, int _xPosition, int _yPosition, GroundType _groundType) {
+        chunkParent = _chunk;
         xPostion = _xPosition;
         yPosition = _yPosition;
         type = _groundType;

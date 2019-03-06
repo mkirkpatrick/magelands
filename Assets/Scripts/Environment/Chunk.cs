@@ -5,13 +5,15 @@ using UnityEngine;
 [System.Serializable]
 public class Chunk
 {
+    public Land landParent;
     public GroundPiece[,] groundPieces;
 
     public int xPosition;
     public int yPosition;
 
-    public Chunk(int _xPos, int _yPos) {
+    public Chunk(Land _land, int _xPos, int _yPos) {
 
+        landParent = _land;
         xPosition = _xPos;
         yPosition = _yPos;
 
@@ -21,7 +23,7 @@ public class Chunk
             {
                 for (int y = 0; y < 16; y++)
                 {
-                    groundPieces[x, y] = new GroundPiece(x,y, GroundPiece.GroundType.Forest_Grass);
+                    groundPieces[x, y] = new GroundPiece(this, x, y, GroundPiece.GroundType.Forest_Grass);
                 }
             }
     }

@@ -28,29 +28,25 @@ public class LandController : MonoBehaviour
         return newLand;
     }
     public void LoadChunks(GameObject _newLand) {
-        float xHalf = _newLand.GetComponent<Land_gameobj>().landData.XSize * 8;
-        float yHalf = _newLand.GetComponent<Land_gameobj>().landData.YSize * 8;
 
-        foreach (Chunk _chunk in _newLand.GetComponent<Land_gameobj>().landData.chunks) {
+        Land newLandData = _newLand.GetComponent<Land_gameobj>().landData;
+        float xHalf = newLandData.XSize * 8;
+        float yHalf = newLandData.YSize * 8;
+
+        foreach (Chunk _chunk in newLandData.chunks) {
             GameObject newChunk = new GameObject();
             newChunk.name = "Chunk (" + _chunk.xPosition + ", " + _chunk.yPosition + ")";
-            newChunk.AddComponent<Chunk_gameobj>();
-            newChunk.transform.parent = _newLand.transform;
 
+            newChunk.AddComponent<Chunk_gameobj>();
             newChunk.GetComponent<Chunk_gameobj>().chunkData = _chunk;
+            newChunk.transform.parent = _newLand.transform;
+            
             newChunk.transform.localPosition = new Vector3((_chunk.xPosition * 16) - xHalf, 0, (_chunk.yPosition * 16) - yHalf);
 
-            LoadGroundPieces(newChunk);
+            newChunk.GetComponent<Chunk_gameobj>().CombineMesh();
         }
     }
     public void LoadGroundPieces(GameObject _newChunk) {
-        Chunk chunkData = _newChunk.GetComponent<Chunk_gameobj>().chunkData;
-        foreach (GroundPiece _ground in chunkData.groundPieces)
-        {
-            GameObject newGround = Instantiate(groundPrefab, _newChunk.transform);
-
-            newGround.GetComponent<GroundPiece_gameobj>().groundPieceData = _ground;
-            newGround.transform.localPosition = new Vector3(_ground.xPostion, 0, _ground.yPosition);
-        }
+        
     }
 }

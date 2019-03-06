@@ -8,11 +8,11 @@ public class GroundPiece_gameobj : MonoBehaviour
 
     void Start()
     {
-        UpdateGroundPieceObject();
+        //UpdateGroundPieceObject();
     }
 
     public void UpdateGroundPieceObject() {
-        GameObject newGround = Instantiate(GameController.instance.database.groundDatabase.GetGroundPiece_GO(groundPieceData.groundObjectID), this.transform);
-        GameObject newTopper = Instantiate( GameController.instance.database.groundDatabase.GetTopper_GO( groundPieceData.topperObjectID ), this.transform);
+       // GameObject newGround = Instantiate(GameController.instance.database.groundDatabase.GetGroundPiece_GO(groundPieceData.groundObjectID), this.transform);
+       // GameObject newTopper = Instantiate( GameController.instance.database.groundDatabase.GetTopper_GO( groundPieceData.topperObjectID ), this.transform);
     }
 }

@@ -33,6 +33,8 @@ public class GroundDatabase : MonoBehaviour
     }
 
     public GameObject GetTopper_GO(string _topperID) {
+        if (_topperID == "Empty")
+            return null;
 
         GameObject newTopper = groundToppers[_topperID];
         return newTopper;

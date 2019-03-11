@@ -6,7 +6,7 @@ using System;
 [System.Serializable]
 public class GroundPiece {
 
-    Chunk chunkParent;
+    public Chunk chunkParent;
 
     public enum GroundType { Empty, Forest_Grass, Dirt };
  

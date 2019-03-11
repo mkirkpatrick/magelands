@@ -14,7 +14,14 @@ public class LandController : MonoBehaviour
     // Use this for initialization
     void Start() {
         foreach (Land land in lands) {
+            LandUtil.Initialize(land);
+            LandUtil.RoundIslandCorners(12);
             LoadLand(land);
+
+            foreach (GroundPiece g in land.groundPieces) {
+                if (g.Type == GroundPiece.GroundType.Empty)
+                    Debug.Log(g.xPosition + "-" + g.yPosition);
+            }
         }
     }
 
@@ -30,8 +37,7 @@ public class LandController : MonoBehaviour
     public void LoadChunks(GameObject _newLand) {
 
         Land newLandData = _newLand.GetComponent<Land_gameobj>().landData;
-        float xHalf = newLandData.XSize * 8;
-        float yHalf = newLandData.YSize * 8;
+        
 
         foreach (Chunk _chunk in newLandData.chunks) {
             GameObject newChunk = new GameObject();
@@ -45,7 +51,6 @@ public class LandController : MonoBehaviour
             newChunk.AddComponent<MeshCollider>();
             newChunk.tag = "Ground";
             newChunk.layer = 8;
-            newChunk.transform.localPosition = new Vector3((_chunk.xPosition * 16) - xHalf, 0, (_chunk.yPosition * 16) - yHalf);
         }
     }
 

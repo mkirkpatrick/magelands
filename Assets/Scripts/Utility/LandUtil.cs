@@ -42,4 +42,8 @@ public static class LandUtil
             }
         }
     }
+
+    public static void InsetIsland(int amount) {
+
+    }
 }

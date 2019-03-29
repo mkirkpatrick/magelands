@@ -5,7 +5,7 @@ using UnityEngine;
 public class LandController : MonoBehaviour
 {
 
-    public Land[] lands;
+    public List<Land> lands;
 
     //Prefabs
     public GameObject landPrefab;
@@ -14,14 +14,7 @@ public class LandController : MonoBehaviour
     // Use this for initialization
     void Start() {
         foreach (Land land in lands) {
-            LandUtil.Initialize(land);
-            LandUtil.RoundIslandCorners(12);
             LoadLand(land);
-
-            foreach (GroundPiece g in land.groundPieces) {
-                if (g.Type == GroundPiece.GroundType.Empty)
-                    Debug.Log(g.xPosition + "-" + g.yPosition);
-            }
         }
     }
 
@@ -37,7 +30,6 @@ public class LandController : MonoBehaviour
     public void LoadChunks(GameObject _newLand) {
 
         Land newLandData = _newLand.GetComponent<Land_gameobj>().landData;
-        
 
         foreach (Chunk _chunk in newLandData.chunks) {
             GameObject newChunk = new GameObject();
@@ -53,5 +45,4 @@ public class LandController : MonoBehaviour
             newChunk.layer = 8;
         }
     }
-
 }

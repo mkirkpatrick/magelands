@@ -1,14 +1,14 @@
 fileFormatVersion: 2
-guid: b75ff37063989f94c8b8cf5a94acff3f
+guid: ff52687e50cba0f4d82d06a8932df988
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
     100000: //RootNode
     400000: //RootNode
-    2100000: Dirt_material
+    2100000: Dirt_Jut_material
     2300000: //RootNode
     3300000: //RootNode
-    4300000: Matrix_189
+    4300000: Matrix_361
   externalObjects: {}
   materials:
     importMaterials: 1

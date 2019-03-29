@@ -15,7 +15,7 @@ public class Chunk_gameobj : MonoBehaviour
         meshRend = this.gameObject.AddComponent<MeshRenderer>();
 
         meshFilter.mesh = new Mesh();
-        meshRend.sharedMaterial = GameController.instance.database.groundDatabase.GetTopper_GO("Forest_Grass").GetComponent<MeshRenderer>().sharedMaterial;
+        meshRend.sharedMaterial = GameController.instance.database.groundDatabase.GetGroundPiece_GO("Forest_Grass").GetComponent<MeshRenderer>().sharedMaterial;
     }
 
     void Start()
@@ -33,16 +33,16 @@ public class Chunk_gameobj : MonoBehaviour
     public void CombineMesh()
     {
 
-        List<CombineInstance> topperList = new List<CombineInstance>();
+        List<CombineInstance> groundList = new List<CombineInstance>();
 
         for (int x = 0; x < 16; x++) {
             for (int y = 0; y < 16; y++)
             {
                 GroundPiece ground = chunkData.groundPieces[x, y];
 
-                if (GameController.instance.database.groundDatabase.GetTopper_GO(ground.Type.ToString()) != null)
+                if (GameController.instance.database.groundDatabase.GetGroundPiece_GO(ground.Type.ToString()) != null)
                 {
-                    GameObject obj = Instantiate(GameController.instance.database.groundDatabase.GetTopper_GO(ground.Type.ToString()), this.transform);
+                    GameObject obj = Instantiate(GameController.instance.database.groundDatabase.GetGroundPiece_GO(ground.Type.ToString()), this.transform);
                     obj.transform.localPosition += new Vector3(x, 0, y);
 
                     CombineInstance combine = new CombineInstance();
@@ -50,18 +50,12 @@ public class Chunk_gameobj : MonoBehaviour
                     combine.transform = obj.transform.localToWorldMatrix;
 
                     //Add it to the list of leaf mesh data
-                    topperList.Add(combine);
+                    groundList.Add(combine);
                     obj.SetActive(false);
                 }
             }
         }
-        {
-
-            
-
-        }
-
-        meshFilter.sharedMesh.CombineMeshes(topperList.ToArray(), true);
+        meshFilter.sharedMesh.CombineMeshes(groundList.ToArray(), true);
 
     }
 }

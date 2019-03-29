@@ -6,6 +6,12 @@ using System;
 [System.Serializable]
 public class GroundPiece {
 
+    private Land land;
+    public Land Land
+    {
+        get { return land; }
+    }
+
     public Chunk chunkParent;
 
     public enum GroundType { Empty, Forest_Grass, Dirt };
@@ -17,20 +23,15 @@ public class GroundPiece {
         set { type = value; }
     }
 
-    public string groundObjectID = "Dirt";
-    public string topperObjectID = "Grass";
+    public string orientationID;
 
-    public int xPosition;
-    public int yPosition;
-
-    public int topperType;
+    public Vector3 position;
 
     public int rotation;
 
-    public GroundPiece(Chunk _chunk, int _xPosition, int _yPosition, GroundType _groundType) {
-        chunkParent = _chunk;
-        xPosition = _xPosition;
-        yPosition = _yPosition;
+    public GroundPiece(Land _land, Vector3 _position, GroundType _groundType) {
+        land = _land;
+        position = _position;
         type = _groundType;
     }
 }

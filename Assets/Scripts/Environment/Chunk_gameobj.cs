@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Chunk_gameobj : MonoBehaviour
 {
@@ -14,48 +15,89 @@ public class Chunk_gameobj : MonoBehaviour
         meshFilter = this.gameObject.AddComponent<MeshFilter>();
         meshRend = this.gameObject.AddComponent<MeshRenderer>();
 
-        meshFilter.mesh = new Mesh();
-        meshRend.sharedMaterial = GameController.instance.database.groundDatabase.GetGroundPiece_GO("Forest_Grass").GetComponent<MeshRenderer>().sharedMaterial;
-    }
+        meshFilter.mesh = new Mesh();    }
 
     void Start()
     {
-        float xHalf = chunkData.landParent.XSize * 8;
-        float yHalf = chunkData.landParent.YSize * 8;
-        transform.localPosition = new Vector3((chunkData.xPosition * 16) - xHalf, 0, (chunkData.yPosition * 16) - yHalf);
+        Init();
+        float xHalf = chunkData.landParent.XSize * 16;
+        float yHalf = chunkData.landParent.ZSize * 16;
+        transform.localPosition = new Vector3((chunkData.xPosition * 32) - xHalf, 0, (chunkData.zPosition * 32) - yHalf);
     }
 
-    public void UpdateChunkVisuals()
-    {
-    
+    private void Init() {
+        for (int x = 0; x < 32; x++) {
+            for (int z = 0; z < 32; z++) {
+                for (int y = 0; y < 16; y++) {
+                    chunkData.groundPieces[x, y, z] = chunkData.landParent.groundPieces[(chunkData.xPosition * 32) + x, y, (chunkData.zPosition * 32) + z];
+                }
+            }
+        }
+        CombineMesh();
+        gameObject.AddComponent<MeshCollider>();
     }
 
     public void CombineMesh()
     {
+        Dictionary<string, List<GroundPiece>> groundPieceCollection = new Dictionary<string, List<GroundPiece>>();
 
-        List<CombineInstance> groundList = new List<CombineInstance>();
+        foreach (GroundPiece groundPiece in chunkData.groundPieces)
+        {
+            if (groundPiece.Type == GroundPiece.GroundType.Empty)
+                continue;
 
-        for (int x = 0; x < 16; x++) {
-            for (int y = 0; y < 16; y++)
+            if (groundPieceCollection.ContainsKey(groundPiece.orientationID) == true)
             {
-                GroundPiece ground = chunkData.groundPieces[x, y];
-
-                if (GameController.instance.database.groundDatabase.GetGroundPiece_GO(ground.Type.ToString()) != null)
-                {
-                    GameObject obj = Instantiate(GameController.instance.database.groundDatabase.GetGroundPiece_GO(ground.Type.ToString()), this.transform);
-                    obj.transform.localPosition += new Vector3(x, 0, y);
-
-                    CombineInstance combine = new CombineInstance();
-                    combine.mesh = obj.GetComponent<MeshFilter>().sharedMesh;
-                    combine.transform = obj.transform.localToWorldMatrix;
-
-                    //Add it to the list of leaf mesh data
-                    groundList.Add(combine);
-                    obj.SetActive(false);
-                }
+                groundPieceCollection[groundPiece.orientationID].Add(groundPiece);
+            }
+            else
+            {
+                groundPieceCollection.Add(groundPiece.orientationID, new List<GroundPiece>());
+                groundPieceCollection[groundPiece.orientationID].Add(groundPiece);
             }
         }
-        meshFilter.sharedMesh.CombineMeshes(groundList.ToArray(), true);
 
+        Mesh[] finalMesh = new Mesh[groundPieceCollection.Count];
+        Material[] materials = new Material[groundPieceCollection.Count];
+        int counter = 0;
+
+        foreach (KeyValuePair<string, List<GroundPiece>> combineList in groundPieceCollection)
+        {
+            CombineInstance[] combineArray = new CombineInstance[combineList.Value.Count];
+
+            for (int i = 0; i < combineList.Value.Count; i++)
+            {
+                GameObject obj = Instantiate(GameController.instance.database.groundDatabase.GetGroundPiece_GO(combineList.Value[i]), this.transform);
+                obj.transform.localPosition += (combineList.Value[i].position);
+                obj.transform.localRotation = Quaternion.Euler(new Vector3(0, combineList.Value[i].rotation, 0));
+
+                CombineInstance combine = new CombineInstance();
+                combine.mesh = obj.GetComponent<MeshFilter>().sharedMesh;
+                combine.transform = obj.transform.localToWorldMatrix;
+
+                combineArray[i] = combine;
+                obj.SetActive(false);
+            }
+            finalMesh[counter] = new Mesh();
+
+            finalMesh[counter].CombineMeshes(combineArray);
+            materials[counter] = Resources.Load("Environment/Materials/" + groundPieceCollection.Keys.ElementAt<string>(counter)) as Material;
+            counter++;
+        }
+
+        CombineInstance[] finalCombineArray = new CombineInstance[finalMesh.Length];
+
+        for (int i = 0; i < finalMesh.Length; i++)
+        {
+            CombineInstance combine = new CombineInstance();
+            combine.mesh = finalMesh[i];
+            combine.transform = this.transform.localToWorldMatrix;
+            finalCombineArray[i] = combine;
+        }
+
+        meshFilter.sharedMesh.CombineMeshes(finalCombineArray, false);
+
+        //Add Materials
+        meshRend.materials = materials;
     }
 }

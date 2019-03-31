@@ -6,17 +6,17 @@ using UnityEngine;
 public class Chunk
 {
     public Land landParent;
-    public GroundPiece[,] groundPieces;
+    public GroundPiece[,,] groundPieces;
 
     public int xPosition;
-    public int yPosition;
+    public int zPosition;
 
-    public Chunk(Land _land, int _xPos, int _yPos) {
+    public Chunk(Land _land, int _xPos, int _zPos) {
 
         landParent = _land;
         xPosition = _xPos;
-        yPosition = _yPos;
+        zPosition = _zPos;
 
-        groundPieces = new GroundPiece[16, 16];
+        groundPieces = new GroundPiece[32, 16, 32];
     }
 }

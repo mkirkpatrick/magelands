@@ -14,7 +14,7 @@ public class GroundPiece {
 
     public Chunk chunkParent;
 
-    public enum GroundType { Empty, Forest_Grass, Dirt };
+    public enum GroundType { Empty, Surrounded, Dirt };
  
     private GroundType type;
     public GroundType Type
@@ -24,6 +24,7 @@ public class GroundPiece {
     }
 
     public string orientationID;
+    public bool[] topBottomNeighbors;
 
     public Vector3 position;
 
@@ -33,5 +34,7 @@ public class GroundPiece {
         land = _land;
         position = _position;
         type = _groundType;
+        orientationID = "Empty";
+        topBottomNeighbors = new bool[2];
     }
 }

@@ -23,23 +23,22 @@ public class Land {
     public int ZSize { get { return zSize; } private set { zSize = value; } }
 
     public GroundPiece[,,] groundPieces;
-    public UnderPiece[] underPieces;
 
-    public Land(Vector3 _worldPosition, int _xSize, int _ZSize) {
+    public Land(Vector3 _worldPosition, int _xSize, int _zSize) {
 
         worldPosition = _worldPosition;
         xSize = _xSize;
-        zSize = _ZSize;
+        zSize = _zSize;
 
-        groundPieces = new GroundPiece[XSize * 16, 32, zSize * 16];
+        groundPieces = new GroundPiece[xSize * 32, 16, zSize * 32];
 
-        for (int x = 0; x < xSize * 16; x++)
+        for (int x = 0; x < xSize * 32; x++)
         {
-            for (int z = 0; z < zSize * 16; z++)
+            for (int z = 0; z < zSize * 32; z++)
             {
-                for (int y = 0; y < 32; y++)
+                for (int y = 0; y < 16; y++)
                 {
-                    groundPieces[x, y, z] = new GroundPiece(this, new Vector3(x, y, z), GroundPiece.GroundType.Forest_Grass);
+                    groundPieces[x, y, z] = new GroundPiece(this, new Vector3(x, y, z), GroundPiece.GroundType.Empty);
                 }
             }
         }

@@ -22,27 +22,6 @@ public class LandController : MonoBehaviour
     {
         GameObject newLand = Instantiate(landPrefab, _landData.worldPosition, Quaternion.identity, this.transform);
         newLand.GetComponent<Land_gameobj>().landData = _landData;
-
-        LoadChunks(newLand);
-
         return newLand;
-    }
-    public void LoadChunks(GameObject _newLand) {
-
-        Land newLandData = _newLand.GetComponent<Land_gameobj>().landData;
-
-        foreach (Chunk _chunk in newLandData.chunks) {
-            GameObject newChunk = new GameObject();
-            newChunk.name = "Chunk (" + _chunk.xPosition + ", " + _chunk.yPosition + ")";
-
-            newChunk.AddComponent<Chunk_gameobj>();
-            newChunk.GetComponent<Chunk_gameobj>().chunkData = _chunk;
-            newChunk.transform.parent = _newLand.transform;
-
-            newChunk.GetComponent<Chunk_gameobj>().CombineMesh();
-            newChunk.AddComponent<MeshCollider>();
-            newChunk.tag = "Ground";
-            newChunk.layer = 8;
-        }
     }
 }

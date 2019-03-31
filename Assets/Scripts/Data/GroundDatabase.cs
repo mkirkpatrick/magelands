@@ -20,33 +20,13 @@ public class GroundDatabase : MonoBehaviour
         {
             groundPieces.Add(loadedGroundPieces[i].name, loadedGroundPieces[i]);
         }
-
-        GameObject[] loadedUnderPieces = Resources.LoadAll("Environment/UnderPieces", typeof(GameObject)).Cast<GameObject>().ToArray();
-        for (int i = 0; i < loadedUnderPieces.Length; i++)
-        {
-            underPieces.Add(loadedUnderPieces[i].name, loadedUnderPieces[i]);
-        }
     }
 
-    public GameObject GetGroundPiece_GO(string _groundID) {
-        if (_groundID == "Empty")
-            return null;
+    public GameObject GetGroundPiece_GO(GroundPiece _ground) {
+        if (_ground.Type == GroundPiece.GroundType.Empty || _ground.Type == GroundPiece.GroundType.Surrounded)
+            return groundPieces["Dirt"];
 
-        GameObject newGround = groundPieces[_groundID];
+        GameObject newGround = groundPieces[_ground.orientationID];
         return newGround;
-    }
-
-    public GameObject GetUnderPiece_GO(string _underPieceID)
-    {
-        if (_underPieceID == "Empty")
-            return null;
-
-        GameObject newUnderPiece;
-        if (underPieces.ContainsKey(_underPieceID))
-            newUnderPiece = underPieces[_underPieceID];
-        else
-            newUnderPiece = underPieces["Dirt_Bottom"];
-
-        return newUnderPiece;
     }
 }

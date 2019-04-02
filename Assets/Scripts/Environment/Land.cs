@@ -22,19 +22,22 @@ public class Land {
     private int zSize;
     public int ZSize { get { return zSize; } private set { zSize = value; } }
 
+    public int levelHeight;
+
     public GroundPiece[,,] groundPieces;
 
     public Land(Vector3 _worldPosition, int _xSize, int _zSize) {
 
         worldPosition = _worldPosition;
-        xSize = _xSize;
-        zSize = _zSize;
+        xSize = _xSize * 32;
+        zSize = _zSize * 32;
+        levelHeight = 6;
 
-        groundPieces = new GroundPiece[xSize * 32, 16, zSize * 32];
+        groundPieces = new GroundPiece[xSize, 16, zSize];
 
-        for (int x = 0; x < xSize * 32; x++)
+        for (int x = 0; x < xSize; x++)
         {
-            for (int z = 0; z < zSize * 32; z++)
+            for (int z = 0; z < zSize; z++)
             {
                 for (int y = 0; y < 16; y++)
                 {

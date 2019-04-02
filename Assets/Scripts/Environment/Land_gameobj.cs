@@ -18,9 +18,9 @@ public class Land_gameobj : MonoBehaviour
     {
         chunks = new GameObject[landData.XSize, landData.ZSize];
 
-        for (int x = 0; x < landData.XSize; x++)
+        for (int x = 0; x < landData.XSize / 32; x++)
         {
-            for (int z = 0; z < landData.ZSize; z++)
+            for (int z = 0; z < landData.ZSize / 32; z++)
             {
                 GameObject newChunk = new GameObject();
                 newChunk.name = "Chunk (" + x + ", " + z + ")";

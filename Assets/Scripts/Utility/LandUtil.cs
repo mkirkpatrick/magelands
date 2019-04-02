@@ -183,15 +183,11 @@ public static class LandUtil
     }
 
     //Ground Formation
-    public static void CreateRectangle(Land _land, int height) {
-        int xSize = _land.groundPieces.GetLength(0);
-        int zSize = _land.groundPieces.GetLength(2);
+    public static void CreateRectangle(Land _land) {
 
-        for (int x = 0; x < xSize; x++) {
-            for (int z = 0; z < zSize; z++) {
-                for (int y = 0; y < height; y++) {
-                    _land.groundPieces[x, y, z].Type = GroundPiece.GroundType.Dirt;
-                }
+        for (int x = 0; x < _land.XSize; x++) {
+            for (int z = 0; z < _land.ZSize; z++) {
+                 _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Dirt;
             }
         }
     }
@@ -236,24 +232,20 @@ public static class LandUtil
         }
     }
 
-    public static void RoughEdges(Land _land, int iterations = 1, int minDist = 5, int maxDist = 10) {
+    public static void RoughEdges(Land _land, int insetFalloff, float perlinScale = 5f, float power = .5f) {
 
-        for (int i = 0; i < iterations; i++) {
-            GroundPiece[] edges = GetEdgePieces(_land);
+        for (int x = 0; x < _land.XSize; x++) {
+            for (int z = 0; z < _land.ZSize; z++) {
+                if (x < insetFalloff || x > _land.XSize - insetFalloff || z < insetFalloff || z > _land.ZSize - insetFalloff) {
+                    Debug.Log(Mathf.PerlinNoise(x / perlinScale, z / perlinScale));
+                    if (Mathf.PerlinNoise(x / perlinScale, z / perlinScale) > power) {
+                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
 
-            int counter = Random.Range(minDist, maxDist+1);
-
-            while (counter < edges.Length) {
-                edges[counter].Type = GroundPiece.GroundType.Empty;
-
-                GroundPiece[] neighbors = GetNeighborGroundPieces(edges[counter]);
-                foreach (GroundPiece neighbor in neighbors)
-                    neighbor.Type = GroundPiece.GroundType.Empty;
-
-                counter += Random.Range(minDist, maxDist + 1);
+                    }
+                        
+                }
             }
-        }
-        
+        } 
     }
 
     public static void RemoveOrphanFloaters(Land _land) {

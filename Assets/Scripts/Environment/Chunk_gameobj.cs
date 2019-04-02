@@ -39,8 +39,8 @@ public class Chunk_gameobj : MonoBehaviour
         GenerateMesh();
         UpdateMesh();
 
-        float xHalf = chunkData.landParent.XSize * 16;
-        float yHalf = chunkData.landParent.ZSize * 16;
+        float xHalf = chunkData.landParent.XSize / 2;
+        float yHalf = chunkData.landParent.ZSize / 2;
         transform.localPosition = new Vector3((chunkData.xPosition * 32) - xHalf, 0, (chunkData.zPosition * 32) - yHalf);
     }
 

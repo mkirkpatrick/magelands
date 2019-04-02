@@ -13,7 +13,7 @@ public class UnderPiece
         get { return type; }
         set { type = value; }
     }
-
+    
     public int rotation;
     public string orientationType;
 

@@ -6,6 +6,14 @@ public static class LandUtil
 {
 
     // Getters and Setters
+    public static GroundPiece GetGroundPiece(Land _land, int[] position) {
+        if (position[0] < 0 || position[0] > _land.groundPieces.GetLength(0)-1 || position[1] < 0 || position[1] > _land.groundPieces.GetLength(1)-1 || position[2] < 0 || position[2] > _land.groundPieces.GetLength(2)-1)
+            return new GroundPiece(_land, new Vector3(position[0], position[1], position[2]), GroundPiece.GroundType.Empty);
+        else {
+            return _land.groundPieces[position[0], position[1], position[2]];
+        }
+            
+    }
     public static GroundPiece[] GetNeighborGroundPieces(GroundPiece _ground, bool diagonals = false)
     {
         GroundPiece[] groundPieces = new GroundPiece[6];
@@ -150,13 +158,12 @@ public static class LandUtil
 
         foreach (GroundPiece ground in _land.groundPieces)
         {
-
             if (ground.Type == GroundPiece.GroundType.Empty)
                 continue;
 
             if (ground.position.x == 0 || ground.position.x == (_land.groundPieces.GetLength(0) - 1))
                 groundPieces.Add(ground);
-            else if (ground.position.z == 0 || ground.position.z == (_land.groundPieces.GetLength(1) - 1))
+            else if (ground.position.z == 0 || ground.position.z == (_land.groundPieces.GetLength(2) - 1))
                 groundPieces.Add(ground);
             else
             {
@@ -200,13 +207,13 @@ public static class LandUtil
                     if (_radius > z)
                     {
                         if (Vector2.Distance(new Vector2(x, z), new Vector2(_radius, _radius)) > _radius)
-                            for (int y = 0; y < 32; y++)
-                                _land.groundPieces[x, 0, z].Type = GroundPiece.GroundType.Empty;
+                            for (int y = 0; y < 16; y++)
+                                _land.groundPieces[x, y, z].Type = GroundPiece.GroundType.Empty;
                     }
                     else if (z > zLength - _radius - 1)
                     {
                         if (Vector2.Distance(new Vector2(x, z), new Vector2(_radius, zLength - _radius - 1)) > _radius)
-                            for(int y = 0; y < 32; y++)
+                            for(int y = 0; y < 16; y++)
                                 _land.groundPieces[x, y, z].Type = GroundPiece.GroundType.Empty;
                     }
                 }
@@ -215,13 +222,13 @@ public static class LandUtil
                     if (_radius > z)
                     {
                         if (Vector2.Distance(new Vector2(x, z), new Vector2((xLength - _radius - 1), _radius)) > _radius)
-                            for (int y = 0; y < 32; y++)
+                            for (int y = 0; y < 16; y++)
                                 _land.groundPieces[x, y, z].Type = GroundPiece.GroundType.Empty;
                     }
                     else if (z > zLength - _radius - 1)
                     {
                         if (Vector2.Distance(new Vector2(x, z), new Vector2(xLength - _radius - 1, zLength - _radius - 1)) > _radius)
-                            for (int y = 0; y < 32; y++)
+                            for (int y = 0; y < 16; y++)
                                 _land.groundPieces[x, y, z].Type = GroundPiece.GroundType.Empty;
                     }
                 }

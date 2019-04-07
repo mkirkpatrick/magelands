@@ -181,7 +181,15 @@ public static class LandUtil
         }
         return groundPieces.ToArray();
     }
-
+    public static void RemoveArea(Land _land, int xStart, int zStart, int xEnd, int zEnd) {
+        for (int x = xStart; x < xEnd; x++) {
+            for (int z = zStart; z < zEnd; x++)
+            {
+                _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+            }
+        }
+    }
+    
     //Ground Formation
     public static void CreateRectangle(Land _land) {
 
@@ -191,61 +199,203 @@ public static class LandUtil
             }
         }
     }
-    public static void RoundLandCorners(Land _land, int _radius) {
+    public static void RoundLandCorners(Land _land, int insetValue, int iterations = 1) {
 
-        int xLength = _land.groundPieces.GetLength(0);
-        int zLength = _land.groundPieces.GetLength(2);
+        int xCount = 0;
+        int zCount = 0;
 
-        for (int x = 0; x < xLength; x++) {
-            for (int z = 0; z < zLength; z++) {
-                if (_land.groundPieces[x,0,z].position.x < _radius)
+        Vector2 area;
+
+        //Bottom Left
+        for (int i = 0; i < iterations; i++) {
+            if (i > 0)
+            {
+                int smallerInset = insetValue - (i * 2);
+                area = new Vector2(Random.Range( smallerInset - 1, smallerInset + 2), Random.Range(smallerInset - 1, smallerInset + 2));
+
+                for (int x = xCount; x < xCount + area.x; x++)
                 {
-                    if (_radius > z)
+                    for (int z = 0; z < area.y; z++)
                     {
-                        if (Vector2.Distance(new Vector2(x, z), new Vector2(_radius, _radius)) > _radius)
-                            for (int y = 0; y < 16; y++)
-                                _land.groundPieces[x, y, z].Type = GroundPiece.GroundType.Empty;
-                    }
-                    else if (z > zLength - _radius - 1)
-                    {
-                        if (Vector2.Distance(new Vector2(x, z), new Vector2(_radius, zLength - _radius - 1)) > _radius)
-                            for(int y = 0; y < 16; y++)
-                                _land.groundPieces[x, y, z].Type = GroundPiece.GroundType.Empty;
+                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
                     }
                 }
-                else if (x > (xLength - _radius - 1))
+                xCount += (int)area.x;
+
+                area = new Vector2(Random.Range(smallerInset - 1, smallerInset + 2), Random.Range(smallerInset - 1, smallerInset + 2));
+
+                for (int x = 0; x < area.x; x++)
                 {
-                    if (_radius > z)
+                    for (int z = zCount; z < zCount + area.y; z++)
                     {
-                        if (Vector2.Distance(new Vector2(x, z), new Vector2((xLength - _radius - 1), _radius)) > _radius)
-                            for (int y = 0; y < 16; y++)
-                                _land.groundPieces[x, y, z].Type = GroundPiece.GroundType.Empty;
-                    }
-                    else if (z > zLength - _radius - 1)
-                    {
-                        if (Vector2.Distance(new Vector2(x, z), new Vector2(xLength - _radius - 1, zLength - _radius - 1)) > _radius)
-                            for (int y = 0; y < 16; y++)
-                                _land.groundPieces[x, y, z].Type = GroundPiece.GroundType.Empty;
+                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
                     }
                 }
+                zCount += (int)area.y;
+            }
+            else {
+                area = new Vector2(Random.Range(insetValue - 1, insetValue + 2), Random.Range(insetValue - 1, insetValue + 2));
+
+                for (int x = 0; x < area.x; x++)
+                {
+                    for (int z = 0; z < area.y; z++)
+                    {
+                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                    }
+                }
+                xCount = (int)area.x;
+                zCount = (int)area.y;
             }
         }
+
+        //Top Left
+        for (int i = 0; i < iterations; i++)
+        {
+            if (i > 0)
+            {
+                int smallerInset = insetValue - (i * 2);
+                area = new Vector2(Random.Range(smallerInset - 1, smallerInset + 2), Random.Range(smallerInset - 1, smallerInset + 2));
+
+                for (int x = xCount; x < xCount + area.x; x++)
+                {
+                    for (int z = _land.ZSize - (int)area.y; z < _land.ZSize; z++)
+                    {
+                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                    }
+                }
+                xCount += (int)area.x;
+
+                area = new Vector2(Random.Range(smallerInset - 1, smallerInset + 2), Random.Range(smallerInset - 1, smallerInset + 2));
+
+                for (int x = 0; x < area.x; x++)
+                {
+                    for (int z = _land.ZSize - ((int)area.y + zCount); z < _land.ZSize; z++)
+                    {
+                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                    }
+                }
+                zCount += (int)area.y;
+            }
+            else
+            {
+                area = new Vector2(Random.Range(insetValue - 1, insetValue + 2), Random.Range(insetValue - 1, insetValue + 2));
+
+                for (int x = 0; x < area.x; x++)
+                {
+                    for (int z = _land.ZSize - (int)area.y; z < _land.ZSize; z++)
+                    {
+                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                    }
+                }
+                xCount = (int)area.x;
+                zCount = (int)area.y;
+            }
+        }
+
+        //Top Right
+        for (int i = 0; i < iterations; i++)
+        {
+            if (i > 0)
+            {
+                int smallerInset = insetValue - (i * 2);
+                area = new Vector2(Random.Range(smallerInset - 1, smallerInset + 2), Random.Range(smallerInset - 1, smallerInset + 2));
+
+                for (int x = _land.XSize - ((int)area.x + xCount); x < _land.XSize; x++)
+                {
+                    for (int z = _land.ZSize - (int)area.y; z < _land.ZSize; z++)
+                    {
+                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                    }
+                }
+                xCount += (int)area.x;
+
+                area = new Vector2(Random.Range(smallerInset - 1, smallerInset + 2), Random.Range(smallerInset - 1, smallerInset + 2));
+
+                for (int x = _land.XSize - (int)area.x; x < _land.XSize; x++)
+                {
+                    for (int z = _land.ZSize - ((int)area.y + zCount); z < _land.ZSize; z++)
+                    {
+                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                    }
+                }
+                zCount += (int)area.y;
+            }
+            else
+            {
+                area = new Vector2(Random.Range(insetValue - 1, insetValue + 2), Random.Range(insetValue - 1, insetValue + 2));
+
+                for (int x = _land.XSize - (int)area.x; x < _land.XSize; x++)
+                {
+                    for (int z = _land.ZSize - (int)area.y; z < _land.ZSize; z++)
+                    {
+                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                    }
+                }
+                xCount = (int)area.x;
+                zCount = (int)area.y;
+            }
+        }
+
+        //Bottom Right
+        for (int i = 0; i < iterations; i++)
+        {
+            if (i > 0)
+            {
+                int smallerInset = insetValue - (i * 2);
+                area = new Vector2(Random.Range(smallerInset - 1, smallerInset + 2), Random.Range(smallerInset - 1, smallerInset + 2));
+
+                for (int x = _land.XSize - ((int)area.x + xCount); x < _land.XSize; x++)
+                {
+                    for (int z = 0; z < area.y; z++)
+                    {
+                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                    }
+                }
+                xCount += (int)area.x;
+
+                area = new Vector2(Random.Range(smallerInset - 1, smallerInset + 2), Random.Range(smallerInset - 1, smallerInset + 2));
+
+                for (int x = _land.XSize - (int)area.x; x < _land.XSize; x++)
+                {
+                    for (int z = zCount; z < area.y + zCount; z++)
+                    {
+                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                    }
+                }
+                zCount += (int)area.y;
+            }
+            else
+            {
+                area = new Vector2(Random.Range(insetValue - 1, insetValue + 2), Random.Range(insetValue - 1, insetValue + 2));
+
+                for (int x = _land.XSize - (int)area.x; x < _land.XSize; x++)
+                {
+                    for (int z = 0; z < area.y; z++)
+                    {
+                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                    }
+                }
+                xCount = (int)area.x;
+                zCount = (int)area.y;
+            }
+        }
+        
     }
 
-    public static void RoughEdges(Land _land, int insetFalloff, float perlinScale = 5f, float power = .5f) {
+    public static void RoughEdges(Land _land, int _cutDepth = 4) {
+
+        float scale = .15f;
+        float randomX = Random.Range(0f, 1f);
+        float randomY = Random.Range(0f, 1f);
+
 
         for (int x = 0; x < _land.XSize; x++) {
-            for (int z = 0; z < _land.ZSize; z++) {
-                if (x < insetFalloff || x > _land.XSize - insetFalloff || z < insetFalloff || z > _land.ZSize - insetFalloff) {
-                    Debug.Log(Mathf.PerlinNoise(x / perlinScale, z / perlinScale));
-                    if (Mathf.PerlinNoise(x / perlinScale, z / perlinScale) > power) {
-                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+            int cutDepth = Mathf.FloorToInt( Mathf.PerlinNoise((x * scale) + randomX, randomY) * (_cutDepth + 1) );
 
-                    }
-                        
-                }
+            for (int depth = 0; depth < cutDepth; depth++) {
+                _land.groundPieces[x, _land.levelHeight, _land.ZSize - (depth + 1)].Type = GroundPiece.GroundType.Empty;
             }
-        } 
+        }
     }
 
     public static void RemoveOrphanFloaters(Land _land) {

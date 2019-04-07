@@ -9,8 +9,8 @@ public static class LandCreator
 
         newLand.Biome = _biomeType;
         LandUtil.CreateRectangle(newLand);
-        //LandUtil.RoundLandCorners(newLand, 18);
-        LandUtil.RoughEdges(newLand, 12, 10, .6f);
+        LandUtil.RoundLandCorners(newLand, 6, 3);
+        LandUtil.RoughEdges(newLand);
         //LandUtil.RemoveJuts(newLand);
         //LandUtil.RemoveOrphanFloaters(newLand);
 

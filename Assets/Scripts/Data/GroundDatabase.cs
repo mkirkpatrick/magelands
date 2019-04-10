@@ -23,10 +23,8 @@ public class GroundDatabase : MonoBehaviour
     }
 
     public GameObject GetGroundPiece_GO(GroundPiece _ground) {
-        if (_ground.Type == GroundPiece.GroundType.Empty || _ground.Type == GroundPiece.GroundType.Surrounded)
-            return groundPieces["Dirt"];
 
-        GameObject newGround = groundPieces[_ground.orientationID];
+        GameObject newGround = groundPieces["Dirt"];
         return newGround;
     }
 }

@@ -23,6 +23,7 @@ public class Land {
     public int ZSize { get { return zSize; } private set { zSize = value; } }
 
     public int levelHeight;
+    public int[,] heightMap;
 
     public GroundPiece[,,] groundPieces;
 
@@ -32,6 +33,7 @@ public class Land {
         xSize = _xSize * 32;
         zSize = _zSize * 32;
         levelHeight = 6;
+        heightMap = new int[xSize, zSize];
 
         groundPieces = new GroundPiece[xSize, 16, zSize];
 

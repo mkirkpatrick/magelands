@@ -9,14 +9,15 @@ public static class LandCreator
 
         newLand.Biome = _biomeType;
         LandUtil.CreateRectangle(newLand);
-        LandUtil.RoundLandCorners(newLand, 6, 3);
-        LandUtil.RoughEdges(newLand);
-        //LandUtil.RemoveJuts(newLand);
-        //LandUtil.RemoveOrphanFloaters(newLand);
+        LandUtil.RoundLandCorners(newLand, 8, 6);
+        LandUtil.RoughEdges(newLand, 6, .04f);
+        LandUtil.ElevateLand(newLand, 4, .015f);
 
         foreach (GroundPiece ground in newLand.groundPieces) {
-            LandUtil.AssignGroundPieceID(ground);
+            LandUtil.AssignGroundPieceNeighbors(ground);
         }
+
+        LandUtil.RemoveJutsAndHoles(newLand);
 
         return newLand;
     }

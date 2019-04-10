@@ -14,10 +14,6 @@ public class Chunk_gameobj : MonoBehaviour
     private List<int> newTriangles = new List<int>();
     private List<Vector2> newUV = new List<Vector2>();
 
-    private float tUnit = 0.25f;
-    private Vector2 tStone = new Vector2(1, 0);
-    private Vector2 tGrass = new Vector2(0, 1);
-
     private MeshCollider col;
 
     private int faceCount;
@@ -33,11 +29,11 @@ public class Chunk_gameobj : MonoBehaviour
 
     void Start()
     {
-        col = GetComponent<MeshCollider>();
         Init();
-
         GenerateMesh();
         UpdateMesh();
+
+        meshRend.sharedMaterial = Resources.Load("Environment/Materials/" + chunkData.landParent.Biome + "_Biome") as Material;
 
         float xHalf = chunkData.landParent.XSize / 2;
         float yHalf = chunkData.landParent.ZSize / 2;
@@ -132,7 +128,7 @@ public class Chunk_gameobj : MonoBehaviour
         newVertices.Add(new Vector3(x, y, z + 1));
         newVertices.Add(new Vector3(x, y - 1, z + 1));
 
-        AssignTexture(new Vector2(0, 0));
+        AssignTexture(_ground, 0);
     }
     void CubeEast(int x, int y, int z, GroundPiece _ground)
     {
@@ -141,7 +137,7 @@ public class Chunk_gameobj : MonoBehaviour
         newVertices.Add(new Vector3(x + 1, y, z + 1));
         newVertices.Add(new Vector3(x + 1, y - 1, z + 1));
 
-        AssignTexture(new Vector2(0, 0));
+        AssignTexture(_ground, 1);
     }
     void CubeSouth(int x, int y, int z, GroundPiece _ground)
     {
@@ -150,7 +146,7 @@ public class Chunk_gameobj : MonoBehaviour
         newVertices.Add(new Vector3(x + 1, y, z));
         newVertices.Add(new Vector3(x + 1, y - 1, z));
 
-        AssignTexture(new Vector2(0, 0));
+        AssignTexture( _ground, 2);
     }
     void CubeWest(int x, int y, int z, GroundPiece _ground)
     {
@@ -159,16 +155,16 @@ public class Chunk_gameobj : MonoBehaviour
         newVertices.Add(new Vector3(x, y, z));
         newVertices.Add(new Vector3(x, y - 1, z));
 
-        AssignTexture(new Vector2(0, 0));
+        AssignTexture( _ground, 3);
     }
     void CubeTop(int x, int y, int z, GroundPiece _ground)
     {
+        newVertices.Add(new Vector3(x, y, z));
         newVertices.Add(new Vector3(x, y, z + 1));
         newVertices.Add(new Vector3(x + 1, y, z + 1));
         newVertices.Add(new Vector3(x + 1, y, z));
-        newVertices.Add(new Vector3(x, y, z));
 
-        AssignTexture( new Vector2(0, 0) );
+        AssignTexture(_ground, 4);
     }
     void CubeBottom(int x, int y, int z, GroundPiece _ground)
     {
@@ -177,10 +173,10 @@ public class Chunk_gameobj : MonoBehaviour
         newVertices.Add(new Vector3(x + 1, y - 1, z + 1));
         newVertices.Add(new Vector3(x, y - 1, z + 1));
 
-        AssignTexture( new Vector2(0,0) ); 
+        AssignTexture(_ground, 5); 
     }
 
-    void AssignTexture(Vector2 texturePos)
+    void AssignTexture(GroundPiece _ground, int _faceNum)
     {
 
         newTriangles.Add(faceCount * 4); //1
@@ -190,10 +186,8 @@ public class Chunk_gameobj : MonoBehaviour
         newTriangles.Add(faceCount * 4 + 2); //3
         newTriangles.Add(faceCount * 4 + 3); //4
 
-        newUV.Add(new Vector2(tUnit * texturePos.x + tUnit, tUnit * texturePos.y));
-        newUV.Add(new Vector2(tUnit * texturePos.x + tUnit, tUnit * texturePos.y + tUnit));
-        newUV.Add(new Vector2(tUnit * texturePos.x, tUnit * texturePos.y + tUnit));
-        newUV.Add(new Vector2(tUnit * texturePos.x, tUnit * texturePos.y));
+        Vector2[] uvs = TextureUtil.GetGroundPieceTexture(_ground, _faceNum);
+        newUV.AddRange(uvs);
 
         faceCount++;
     }

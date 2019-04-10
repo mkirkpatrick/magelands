@@ -23,8 +23,7 @@ public class GroundPiece {
         set { type = value; }
     }
 
-    public string orientationID;
-    public bool[] topBottomNeighbors;
+    public bool[] neighbors;
 
     public Vector3 position;
 
@@ -34,7 +33,6 @@ public class GroundPiece {
         land = _land;
         position = _position;
         type = _groundType;
-        orientationID = "Empty";
-        topBottomNeighbors = new bool[2];
+        neighbors = new bool[6];
     }
 }

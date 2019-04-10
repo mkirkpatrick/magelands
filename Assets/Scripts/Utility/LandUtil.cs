@@ -17,140 +17,41 @@ public static class LandUtil
     public static GroundPiece[] GetNeighborGroundPieces(GroundPiece _ground, bool diagonals = false)
     {
         GroundPiece[] groundPieces = new GroundPiece[6];
+        int x = (int)_ground.position.x;
+        int y = (int)_ground.position.y;
+        int z = (int)_ground.position.z;
 
         // Adjacents
-        if (_ground.position.z != _ground.Land.groundPieces.GetLength(2) - 1)
-            groundPieces[0] = _ground.Land.groundPieces[(int)_ground.position.x, (int)_ground.position.y, (int)_ground.position.z + 1];
-        else
-            groundPieces[0] = new GroundPiece(null, new Vector3(0,0,0), GroundPiece.GroundType.Empty);
-        if (_ground.position.x != _ground.Land.groundPieces.GetLength(0) - 1)
-            groundPieces[1] = _ground.Land.groundPieces[(int)_ground.position.x + 1, (int)_ground.position.y, (int)_ground.position.z];
-        else
-            groundPieces[1] = new GroundPiece(null, new Vector3(0, 0, 0), GroundPiece.GroundType.Empty);
-        if (_ground.position.z != 0)
-            groundPieces[2] = _ground.Land.groundPieces[(int)_ground.position.x, (int)_ground.position.y, (int)_ground.position.z - 1];
-        else
-            groundPieces[2] = new GroundPiece(null, new Vector3(0, 0, 0), GroundPiece.GroundType.Empty);
-        if (_ground.position.x != 0)
-            groundPieces[3] = _ground.Land.groundPieces[(int)_ground.position.x - 1, (int)_ground.position.y, (int)_ground.position.z];
-        else
-            groundPieces[3] = new GroundPiece(null, new Vector3(0, 0, 0), GroundPiece.GroundType.Empty);
 
-        //Top and Bottom
-        if (_ground.position.y != _ground.Land.groundPieces.GetLength(1) - 1)
-            groundPieces[4] = _ground.Land.groundPieces[(int)_ground.position.x, (int)_ground.position.y + 1, (int)_ground.position.z];
-        else
-            groundPieces[4] = new GroundPiece(null, new Vector3(0, 0, 0), GroundPiece.GroundType.Empty);
-        if (_ground.position.y != 0)
-            groundPieces[5] = _ground.Land.groundPieces[(int)_ground.position.x, (int)_ground.position.y - 1, (int)_ground.position.z];
-        else
-            groundPieces[5] = new GroundPiece(null, new Vector3(0, 0, 0), GroundPiece.GroundType.Empty);
+        groundPieces[0] = GetGroundPiece(_ground.Land, new int[] { x, y, z + 1 });
+        groundPieces[1] = GetGroundPiece(_ground.Land, new int[] { x + 1, y, z });
+        groundPieces[2] = GetGroundPiece(_ground.Land, new int[] { x, y, z - 1 });
+        groundPieces[3] = GetGroundPiece(_ground.Land, new int[] { x - 1, y, z });
+        groundPieces[4] = GetGroundPiece(_ground.Land, new int[] { x, y + 1, z });
+        groundPieces[5] = GetGroundPiece(_ground.Land, new int[] { x, y - 1, z });
 
         // Diagonals     TODO: Add diagonals if needed.
 
         return groundPieces;
     }
-    public static void AssignGroundPieceID(GroundPiece _groundPiece)
+    public static void AssignGroundPieceNeighbors(GroundPiece _groundPiece)
     {
-        if (_groundPiece.Type == GroundPiece.GroundType.Empty)
-            return;
+        int x = (int)_groundPiece.position.x;
+        int y = (int)_groundPiece.position.y;
+        int z = (int)_groundPiece.position.z;
 
-        string adjacentPieceID = "";
-        string[] adjacentsFound = new string[4];
-        for (int i = 0; i < 4; i++)
-            adjacentsFound[i] = "";
-
-        string verticalPieceID = "";
-        string[] verticalsFound = new string[2];
-        for (int i = 0; i < 2; i++)
-            verticalsFound[i] = "";
-
-        GroundPiece[] neighborGroundPieces = LandUtil.GetNeighborGroundPieces(_groundPiece);
-
-        foreach (GroundPiece neighbor in neighborGroundPieces)
-        {
-            if (neighbor.Type != GroundPiece.GroundType.Empty)
-            {
-                if (neighbor.position.z > _groundPiece.position.z)
-                    adjacentsFound[0] = "N";
-                if (neighbor.position.x > _groundPiece.position.x)
-                    adjacentsFound[1] = "E";
-                if (neighbor.position.z < _groundPiece.position.z)
-                    adjacentsFound[2] = "S";
-                if (neighbor.position.x < _groundPiece.position.x)
-                    adjacentsFound[3] = "W";
-                if (neighbor.position.y > _groundPiece.position.y)
-                    verticalsFound[0] = "T";
-                if (neighbor.position.y < _groundPiece.position.y)
-                    verticalsFound[1] = "B";
-            }
-        }
-        for (int i = 0; i < 4; i++)
-            adjacentPieceID += adjacentsFound[i];
-        for (int i = 0; i < 2; i++)
-            verticalPieceID += verticalsFound[i];
-
-        if (adjacentPieceID == "NESW" && verticalPieceID == "TB") {
-            _groundPiece.Type = GroundPiece.GroundType.Surrounded;
-            _groundPiece.orientationID = _groundPiece.Type.ToString();
-            return;
-        }
-
-        _groundPiece.orientationID = _groundPiece.Type.ToString();
-
-        switch (adjacentPieceID)
-        {
-
-            case "N":
-            case "E":
-            case "S":
-            case "W":
-                _groundPiece.orientationID += "_Jut";
-                break;
-            case "NE":
-            case "ES":
-            case "SW":
-            case "NW":
-                _groundPiece.orientationID += "_Corner";
-                break;
-            case "NES":
-            case "ESW":
-            case "NSW":
-            case "NEW":
-                _groundPiece.orientationID += "_Straight";
-                break;
-        }
-        switch (adjacentPieceID)
-        {
-            case "NW":
-            case "NSW":
-            case "W":
-                _groundPiece.rotation = 90;
-                break;
-            case "NE":
-            case "NEW":
-            case "N":
-                _groundPiece.rotation = 180;
-                break;
-            case "ES":
-            case "NES":
-            case "E":
-                _groundPiece.rotation = 270;
-                break;
-        }
-        switch (verticalPieceID)
-        {
-            case "":
-                _groundPiece.orientationID += "_Bottom";
-                break;
-            case "T":
-                _groundPiece.orientationID += "_Bottom";
-                _groundPiece.topBottomNeighbors[0] = true;
-                break;
-            case "B":
-                _groundPiece.topBottomNeighbors[1] = true;
-                break;
-        }
+        if (GetGroundPiece(_groundPiece.Land, new int[3] { x, y, z + 1 }).Type != GroundPiece.GroundType.Empty)
+            _groundPiece.neighbors[0] = true;
+        if (GetGroundPiece(_groundPiece.Land, new int[3] { x + 1, y, z }).Type != GroundPiece.GroundType.Empty)
+            _groundPiece.neighbors[1] = true;
+        if (GetGroundPiece(_groundPiece.Land, new int[3] { x, y, z - 1 }).Type != GroundPiece.GroundType.Empty)
+            _groundPiece.neighbors[2] = true;
+        if (GetGroundPiece(_groundPiece.Land, new int[3] { x - 1, y, z }).Type != GroundPiece.GroundType.Empty)
+            _groundPiece.neighbors[3] = true;
+        if (GetGroundPiece(_groundPiece.Land, new int[3] { x, y + 1, z }).Type != GroundPiece.GroundType.Empty)
+            _groundPiece.neighbors[4] = true;
+        if (GetGroundPiece(_groundPiece.Land, new int[3] { x, y - 1, z }).Type != GroundPiece.GroundType.Empty)
+            _groundPiece.neighbors[5] = true;
     }
     public static GroundPiece[] GetEdgePieces(Land _land)
     {
@@ -382,9 +283,9 @@ public static class LandUtil
         
     }
 
-    public static void RoughEdges(Land _land, int _cutDepth = 4) {
+    public static void RoughEdges(Land _land, int _cutDepth = 4, float _scale = .15f) {
 
-        float scale = .15f;
+        float scale = _scale;
         float randomX = Random.Range(0f, 1f);
         float randomY = Random.Range(0f, 1f);
 
@@ -394,6 +295,39 @@ public static class LandUtil
 
             for (int depth = 0; depth < cutDepth; depth++) {
                 _land.groundPieces[x, _land.levelHeight, _land.ZSize - (depth + 1)].Type = GroundPiece.GroundType.Empty;
+            }
+        }
+        randomX = Random.Range(0f, 1f);
+        randomY = Random.Range(0f, 1f);
+        for (int z = 0; z < _land.ZSize; z++)
+        {
+            int cutDepth = Mathf.FloorToInt(Mathf.PerlinNoise(randomX, (z * scale) + randomY) * (_cutDepth + 1));
+
+            for (int depth = 0; depth < cutDepth; depth++)
+            {
+                _land.groundPieces[_land.XSize - (depth + 1), _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+            }
+        }
+        randomX = Random.Range(0f, 1f);
+        randomY = Random.Range(0f, 1f);
+        for (int x = 0; x < _land.XSize; x++)
+        {
+            int cutDepth = Mathf.FloorToInt(Mathf.PerlinNoise((x * scale) + randomX, randomY) * (_cutDepth + 1));
+
+            for (int depth = 0; depth < cutDepth; depth++)
+            {
+                _land.groundPieces[x, _land.levelHeight, depth].Type = GroundPiece.GroundType.Empty;
+            }
+        }
+        randomX = Random.Range(0f, 1f);
+        randomY = Random.Range(0f, 1f);
+        for (int z = 0; z < _land.ZSize; z++)
+        {
+            int cutDepth = Mathf.FloorToInt(Mathf.PerlinNoise(randomX, (z * scale) + randomY) * (_cutDepth + 1));
+
+            for (int depth = 0; depth < cutDepth; depth++)
+            {
+                _land.groundPieces[depth, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
             }
         }
     }
@@ -416,21 +350,38 @@ public static class LandUtil
 
         }
     }
+    public static void RemoveJutsAndHoles(Land _land) {
 
-    public static void RemoveJuts(Land _land) {
-        GroundPiece[] groundPieces = GetEdgePieces(_land);
-
-        foreach (GroundPiece ground in groundPieces)
+        foreach (GroundPiece ground in _land.groundPieces)
         {
-            GroundPiece[] neighbors = GetNeighborGroundPieces(ground);
 
             int counter = 0;
-            foreach (GroundPiece neighbor in neighbors) {
-                if (neighbor.Type != GroundPiece.GroundType.Empty)
+            for (int i = 0; i < 4; i++) {
+                if (ground.neighbors[i] == true)
                     counter++;
             }
-            if (counter == 1)
+            if (counter <= 1)
                 ground.Type = GroundPiece.GroundType.Empty;
+            else if (counter == 4)
+                ground.Type = GroundPiece.GroundType.Dirt;
+        }
+    }
+
+    public static void ElevateLand(Land _land, int elevationMax, float _scale = .04f) {
+        float scale = _scale;
+        float randomX = Random.Range(0f, 1f);
+        float randomY = Random.Range(0f, 1f);
+
+        for (int x = 0; x < _land.XSize; x++) {
+            for (int z = 0; z < _land.ZSize; z++) {
+                if (_land.groundPieces[x, _land.levelHeight, z].Type == GroundPiece.GroundType.Empty)
+                    continue;
+
+                int heightValue = Mathf.FloorToInt( Mathf.PerlinNoise( (x * scale) + randomX, (z * scale) + randomY) * (elevationMax + 1) );
+
+                for (int i = _land.levelHeight + 1; i < _land.levelHeight + heightValue; i++)
+                    _land.groundPieces[x, i, z].Type = GroundPiece.GroundType.Dirt;
+            }
         }
     }
 }

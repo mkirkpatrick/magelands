@@ -92,11 +92,13 @@ public static class LandUtil
     }
     
     //Ground Formation
-    public static void CreateRectangle(Land _land) {
+    public static void CreateBox(Land _land, Vector3 _position, Vector3 _size) {
 
-        for (int x = 0; x < _land.XSize; x++) {
-            for (int z = 0; z < _land.ZSize; z++) {
-                 _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Dirt;
+        for (int x = 0; x < _size.x; x++) {
+            for (int z = 0; z < _size.z; z++) {
+                for (int y = 0; y < _size.y; y++) {
+                    _land.groundPieces[(int)_position.x + x, (int)_position.y + y, (int)_position.z + z].Type = GroundPiece.GroundType.Dirt;
+                }
             }
         }
     }
@@ -283,7 +285,7 @@ public static class LandUtil
         
     }
 
-    public static void RoughEdges(Land _land, int _cutDepth = 4, float _scale = .15f) {
+    public static void RoughEdges(Land _land, int _cutDepth = 4, float _scale = .05f) {
 
         float scale = _scale;
         float randomX = Random.Range(0f, 1f);
@@ -366,7 +368,6 @@ public static class LandUtil
                 ground.Type = GroundPiece.GroundType.Dirt;
         }
     }
-
     public static void ElevateLand(Land _land, int elevationMax, float _scale = .04f) {
         float scale = _scale;
         float randomX = Random.Range(0f, 1f);

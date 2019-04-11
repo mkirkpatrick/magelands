@@ -7,7 +7,6 @@ public class GameController : MonoBehaviour {
     public static GameController instance = null;
 
     public DatabaseController database;
-
     public LandController landController;
 
     // Use this for initialization
@@ -22,9 +21,6 @@ public class GameController : MonoBehaviour {
 
         landController.lands = new List<Land>();
         landController.lands.Add( LandCreator.CreateLand( Land.BiomeType.Forest, new Vector3(0, 0, 0), 3, 3) );
-        landController.lands.Add(LandCreator.CreateLand(Land.BiomeType.Forest, new Vector3(-96, 0, 0), 3, 3));
-        landController.lands.Add(LandCreator.CreateLand(Land.BiomeType.Forest, new Vector3(96, 0, 0), 3, 3));
-        landController.lands.Add(LandCreator.CreateLand(Land.BiomeType.Forest, new Vector3(0, 0, 96), 6, 3));
     }
     void Start() {
 

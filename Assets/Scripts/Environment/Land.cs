@@ -32,7 +32,7 @@ public class Land {
         worldPosition = _worldPosition;
         xSize = _xSize * 32;
         zSize = _zSize * 32;
-        levelHeight = 6;
+        levelHeight = 3;
         heightMap = new int[xSize, zSize];
 
         groundPieces = new GroundPiece[xSize, 16, zSize];

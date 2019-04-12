@@ -326,6 +326,19 @@ public static class HeightMapUtil
         }
         return newMap;  
     }
+    public static int[,] LowerCeilingValues(int[,] _map, int highestValue) {
+        int[,] newMap = _map;
+
+        for (int x = 0; x < _map.GetLength(0); x++)
+        {
+            for (int y = 0; y < _map.GetLength(1); y++)
+            {
+                if (newMap[x, y] > highestValue)
+                    newMap[x, y] = highestValue;
+            }
+        }
+        return newMap;
+    }
     public static int[,] SmoothMap(int[,] _map) {
         int[,] newMap = _map;
         bool[] smoothingFound;

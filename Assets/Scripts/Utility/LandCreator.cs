@@ -16,12 +16,14 @@ public static class LandCreator
         HeightMapUtil.RoundMapCorners(newLand, 8, 6);
         newLand.heightMap = HeightMapUtil.RoughMapEdges(newLand.heightMap, 6, .04f, true);
 
-        HeightMapUtil.RaiseMountain(newLand, new int[] { newLand.XSize / 2, newLand.ZSize / 2 }, new int[] { Mathf.RoundToInt( newLand.XSize * .75f ), Mathf.RoundToInt(newLand.ZSize * .75f) }, 4);
-        HeightMapUtil.RaiseMountain(newLand, new int[] { Random.Range(12,newLand.XSize - 16) , Random.Range(16, newLand.ZSize - 16) }, new int[] { Random.Range(20, 33), Random.Range(16, 25) }, Random.Range(4, 8));
-        HeightMapUtil.RaiseMountain(newLand, new int[] { Random.Range(12, newLand.XSize - 16), Random.Range(16, newLand.ZSize - 16) }, new int[] { Random.Range(16, 25), Random.Range(16, 25) }, Random.Range(4, 8));
-        HeightMapUtil.RaiseMountain(newLand, new int[] { Random.Range(12, newLand.XSize - 16), Random.Range(16, newLand.ZSize - 16) }, new int[] { Random.Range(16, 25), Random.Range(16, 25) }, Random.Range(8, 10));
+        //HeightMapUtil.RaiseMountain(newLand, new int[] { newLand.XSize / 2, newLand.ZSize / 2 }, new int[] { Mathf.RoundToInt( newLand.XSize * .75f ), Mathf.RoundToInt(newLand.ZSize * .75f) }, 4);
+        //HeightMapUtil.RaiseMountain(newLand, new int[] { 48, 48 }, new int[] { 40, 40 }, 12);
 
-        newLand.heightMap = HeightMapUtil.SmoothMap(newLand.heightMap);
+        int[,] newMap = HeightMapUtil.ExtractMapArea(newLand.heightMap, new int[] { 0, newLand.ZSize / 2 }, new int[] { newLand.XSize, newLand.ZSize / 2 });
+
+        newMap = HeightMapUtil.RaiseFloorValues(newMap, 8);
+        newLand.heightMap = HeightMapUtil.InsertMapIntoMap(newLand.heightMap, newMap, new int[] { 0, newLand.ZSize / 2 });
+
         newLand.heightMap = HeightMapUtil.SmoothMap(newLand.heightMap);
 
         for (int x = 0; x < newLand.XSize; x++) {

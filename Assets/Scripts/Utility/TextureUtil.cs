@@ -15,7 +15,8 @@ public static class TextureUtil
         uvVectors[2] = new Vector2(tUnit * texturePos.x + tUnit, tUnit * texturePos.y + tUnit);
         uvVectors[3] = new Vector2(tUnit * texturePos.x + tUnit, tUnit * texturePos.y);
 
-        uvVectors = RotateTexture( uvVectors, _ground, _faceNum);
+        uvVectors = AlignTexture(uvVectors, _ground, _faceNum);
+        //uvVectors = RotateTexture( uvVectors, _ground, _faceNum);
 
         return uvVectors;
     }
@@ -33,9 +34,9 @@ public static class TextureUtil
                     if (_ground.neighbors[1] == false || _ground.neighbors[3] == false)
                     {
                         if (_ground.neighbors[5] == true)
-                            texturePosition = new Vector2(0, 1);
-                        else
                             texturePosition = new Vector2(0, 3);
+                        else
+                            texturePosition = new Vector2(0, 5);
                     }
                     else if (_ground.neighbors[5] == false)
                         texturePosition = new Vector2(0, 1);
@@ -45,9 +46,9 @@ public static class TextureUtil
                     if (_ground.neighbors[0] == false || _ground.neighbors[2] == false)
                     {
                         if (_ground.neighbors[5] == true)
-                            texturePosition = new Vector2(0, 1);
+                            texturePosition = new Vector2(0, 4);
                         else
-                            texturePosition = new Vector2(0, 3);
+                            texturePosition = new Vector2(0, 6);
                     }
                     else if (_ground.neighbors[5] == false)
                         texturePosition = new Vector2(0, 1);
@@ -57,9 +58,9 @@ public static class TextureUtil
                     if (_ground.neighbors[1] == false || _ground.neighbors[3] == false)
                     {
                         if (_ground.neighbors[5] == true)
-                            texturePosition = new Vector2(0, 1);
-                        else
                             texturePosition = new Vector2(0, 3);
+                        else
+                            texturePosition = new Vector2(0, 5);
                     }
                     else if (_ground.neighbors[5] == false)
                         texturePosition = new Vector2(0, 1);
@@ -69,9 +70,9 @@ public static class TextureUtil
                     if (_ground.neighbors[0] == false || _ground.neighbors[2] == false)
                     {
                         if (_ground.neighbors[5] == true)
-                            texturePosition = new Vector2(0, 1);
+                            texturePosition = new Vector2(0, 4);
                         else
-                            texturePosition = new Vector2(0, 3);
+                            texturePosition = new Vector2(0, 6);
                     }
                     else if (_ground.neighbors[5] == false)
                         texturePosition = new Vector2(0, 1);
@@ -80,6 +81,31 @@ public static class TextureUtil
                 break;
         }
         return texturePosition;
+    }
+    static Vector2[] AlignTexture(Vector2[] _vectors, GroundPiece _ground, int _face) {
+        Vector2[] newVectors = _vectors;
+        bool[] neighbors = _ground.neighbors;
+
+        switch (_face) {
+            case 0:
+                if (neighbors[3] == false)
+                    newVectors = FlipTexture(newVectors, 1);
+                break;
+            case 1:
+                if (neighbors[2] == false)
+                    newVectors = FlipTexture(newVectors, 1);
+                break;
+            case 2:
+                if (neighbors[1] == false)
+                    newVectors = FlipTexture(newVectors, 1);
+                break;
+            case 3:
+                if (neighbors[0] == false)
+                    newVectors = FlipTexture(newVectors, 1);
+                break;
+        }
+
+        return newVectors;
     }
     static Vector2[] RotateTexture(Vector2[] vectors, GroundPiece _ground, int _face) {
         Vector2[] newVectors = new Vector2[4];
@@ -154,12 +180,14 @@ public static class TextureUtil
     static Vector2[] FlipTexture(Vector2[] vectors, int flipAxis = 0) {
         Vector2[] newVectors = new Vector2[4];
 
+        //Vertical
         if (flipAxis == 0) {
             newVectors[0] = vectors[1];
             newVectors[1] = vectors[0];
             newVectors[2] = vectors[3];
             newVectors[3] = vectors[2];
         }
+        //Horizontal
         else {
             newVectors[0] = vectors[3];
             newVectors[1] = vectors[2];

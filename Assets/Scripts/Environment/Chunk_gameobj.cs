@@ -30,8 +30,8 @@ public class Chunk_gameobj : MonoBehaviour
     void Start()
     {
         Init();
-        GenerateMesh();
-        UpdateMesh();
+        GenerateBlockMesh();
+        UpdateBlockMesh();
 
         meshRend.sharedMaterial = Resources.Load("Environment/Materials/" + chunkData.landParent.Biome + "_Biome") as Material;
 
@@ -41,6 +41,9 @@ public class Chunk_gameobj : MonoBehaviour
     }
 
     private void Init() {
+
+        GameObject groundEdgeDetail = new GameObject("Ground Edge Detail", typeof(MeshRenderer), typeof(MeshFilter));
+
         for (int x = 0; x < 32; x++) {
             for (int z = 0; z < 32; z++) {
                 for (int y = 0; y < 16; y++) {
@@ -49,7 +52,7 @@ public class Chunk_gameobj : MonoBehaviour
             }
         }  
     }
-    public void GenerateMesh()
+    public void GenerateBlockMesh()
     {
         int xOffset = chunkData.xPosition * 32;
         int zOffset = chunkData.zPosition * 32;
@@ -103,7 +106,7 @@ public class Chunk_gameobj : MonoBehaviour
             }
         }
     }
-    public void UpdateMesh()
+    public void UpdateBlockMesh()
     {
         Mesh mesh = meshFilter.sharedMesh;
 

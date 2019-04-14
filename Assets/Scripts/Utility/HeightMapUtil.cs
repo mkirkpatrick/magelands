@@ -320,7 +320,7 @@ public static class HeightMapUtil
         for (int x = 0; x < _map.GetLength(0); x++) {
             for (int y = 0; y < _map.GetLength(1); y++)
             {
-                if (newMap[x,y] < lowestValue)
+                if (newMap[x,y] < lowestValue && newMap[x,y] != 0)
                     newMap[x, y] = lowestValue;
             }
         }
@@ -421,7 +421,6 @@ public static class HeightMapUtil
                 newMap[_position[0] + x, _position[1] + y] = _childMap[x, y];  
             }
         }
-
         return newMap;
     }
     public static int[,] ExtractMapArea(int[,] _parentMap, int[] _position, int[] _size) {
@@ -439,7 +438,6 @@ public static class HeightMapUtil
                 newMap[x, y] = _parentMap[_position[0] + x, _position[1] + y];  
             }
         }
-
         return newMap;
     }
     public static int[] GetMapNeighbors(int[,] _map, int[] _position) {

@@ -440,6 +440,7 @@ public static class HeightMapUtil
         }
         return newMap;
     }
+
     public static int[] GetMapNeighbors(int[,] _map, int[] _position) {
         int[] neighbors = new int[4] { 0, 0, 0, 0 };
 

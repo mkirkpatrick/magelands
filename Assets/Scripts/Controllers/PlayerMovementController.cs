@@ -38,5 +38,7 @@ public class PlayerMovementController : MonoBehaviour
             Vector3 newPosition = Vector3.MoveTowards(transform.position, currentDestination, moveSpeed * Time.deltaTime);
             transform.position = newPosition;
         }
+
+        transform.LookAt(new Vector3(currentDestination.x, transform.position.y, currentDestination.z));
     }
 }

@@ -12,7 +12,7 @@ public class Chunk_gameobj : MonoBehaviour
 
     private List<Vector3> newVertices = new List<Vector3>();
     private List<int> newTriangles = new List<int>();
-    private List<Vector2> newUV = new List<Vector2>();
+    private List<Vector2> newUVs = new List<Vector2>();
 
     private MeshCollider col;
 
@@ -68,42 +68,65 @@ public class Chunk_gameobj : MonoBehaviour
                         if (LandUtil.GetGroundPiece(chunkData.landParent, new int[3] {xOffset + x, y + 1, zOffset + z }).Type == GroundPiece.GroundType.Empty)
                         {
                             //Block above is air
-                            CubeTop(x, y, z, chunkData.groundPieces[x, y, z]);
+                            newVertices.AddRange( MeshUtil.AddMeshFace(chunkData.groundPieces[x, y, z], 4) );
+                            GenerateTris();
+                            newUVs.AddRange( TextureUtil.GetGroundPieceTexture(chunkData.groundPieces[x, y, z], 4) );
                         }
 
                         if (LandUtil.GetGroundPiece(chunkData.landParent, new int[3] { xOffset + x, y - 1, zOffset + z }).Type == GroundPiece.GroundType.Empty)
                         {
                             //Block below is air
-                            CubeBottom(x, y, z, chunkData.groundPieces[x, y, z]);
+                            newVertices.AddRange(MeshUtil.AddMeshFace(chunkData.groundPieces[x, y, z], 5));
+                            GenerateTris();
+                            newUVs.AddRange( TextureUtil.GetGroundPieceTexture(chunkData.groundPieces[x, y, z], 5) );
                         }
 
                         if (LandUtil.GetGroundPiece(chunkData.landParent, new int[3] { xOffset + x + 1, y, zOffset + z }).Type == GroundPiece.GroundType.Empty)
                         {
                             //Block east is air
-                            CubeEast(x, y, z, chunkData.groundPieces[x, y, z]);
+                            newVertices.AddRange(MeshUtil.AddMeshFace(chunkData.groundPieces[x, y, z], 1));
+                            GenerateTris();
+                            newUVs.AddRange( TextureUtil.GetGroundPieceTexture(chunkData.groundPieces[x, y, z], 1) );
                         }
 
                         if (LandUtil.GetGroundPiece(chunkData.landParent, new int[3] { xOffset + x - 1, y, zOffset + z }).Type == GroundPiece.GroundType.Empty)
                         {
                             //Block west is air
-                            CubeWest(x, y, z, chunkData.groundPieces[x, y, z]);
+                            newVertices.AddRange(MeshUtil.AddMeshFace(chunkData.groundPieces[x, y, z], 3));
+                            GenerateTris();
+                            newUVs.AddRange( TextureUtil.GetGroundPieceTexture(chunkData.groundPieces[x, y, z], 3) );
 
                         }
 
                         if (LandUtil.GetGroundPiece(chunkData.landParent, new int[3] { xOffset + x, y, zOffset + z + 1 }).Type == GroundPiece.GroundType.Empty)
                         {
                             //Block north is air
-                            CubeNorth(x, y, z, chunkData.groundPieces[x, y, z]);
+                            newVertices.AddRange(MeshUtil.AddMeshFace(chunkData.groundPieces[x, y, z], 0));
+                            GenerateTris();
+                            newUVs.AddRange( TextureUtil.GetGroundPieceTexture(chunkData.groundPieces[x, y, z], 0) );
                         }
 
                         if (LandUtil.GetGroundPiece(chunkData.landParent, new int[3] { xOffset + x, y, zOffset + z - 1 }).Type == GroundPiece.GroundType.Empty)
                         {
                             //Block south is air
-                            CubeSouth(x, y, z, chunkData.groundPieces[x, y, z]);
+                            newVertices.AddRange(MeshUtil.AddMeshFace(chunkData.groundPieces[x, y, z], 2));
+                            GenerateTris();
+                            newUVs.AddRange( TextureUtil.GetGroundPieceTexture(chunkData.groundPieces[x, y, z], 2) );
                         }
                     }
                 }
             }
+        }
+
+        void GenerateTris() {
+            newTriangles.Add(faceCount * 4); //1
+            newTriangles.Add(faceCount * 4 + 1); //2
+            newTriangles.Add(faceCount * 4 + 2); //3
+            newTriangles.Add(faceCount * 4); //1
+            newTriangles.Add(faceCount * 4 + 2); //3
+            newTriangles.Add(faceCount * 4 + 3); //4
+
+            faceCount++;
         }
     }
     public void UpdateBlockMesh()
@@ -112,88 +135,21 @@ public class Chunk_gameobj : MonoBehaviour
 
         mesh.Clear();
         mesh.vertices = newVertices.ToArray();
-        mesh.uv = newUV.ToArray();
+        mesh.uv = newUVs.ToArray();
         mesh.triangles = newTriangles.ToArray();
         mesh.RecalculateNormals();
 
         col.sharedMesh = mesh;
 
         newVertices.Clear();
-        newUV.Clear();
+        newUVs.Clear();
         newTriangles.Clear();
 
         faceCount = 0;
     }
-    void CubeNorth(int x, int y, int z, GroundPiece _ground)
-    {
-        newVertices.Add(new Vector3(x + 1, y - 1, z + 1));
-        newVertices.Add(new Vector3(x + 1, y, z + 1));
-        newVertices.Add(new Vector3(x, y, z + 1));
-        newVertices.Add(new Vector3(x, y - 1, z + 1));
+    
 
-        AssignTexture(_ground, 0);
-    }
-    void CubeEast(int x, int y, int z, GroundPiece _ground)
-    {
-        newVertices.Add(new Vector3(x + 1, y - 1, z));
-        newVertices.Add(new Vector3(x + 1, y, z));
-        newVertices.Add(new Vector3(x + 1, y, z + 1));
-        newVertices.Add(new Vector3(x + 1, y - 1, z + 1));
-
-        AssignTexture(_ground, 1);
-    }
-    void CubeSouth(int x, int y, int z, GroundPiece _ground)
-    {
-        newVertices.Add(new Vector3(x, y - 1, z));
-        newVertices.Add(new Vector3(x, y, z));
-        newVertices.Add(new Vector3(x + 1, y, z));
-        newVertices.Add(new Vector3(x + 1, y - 1, z));
-
-        AssignTexture( _ground, 2);
-    }
-    void CubeWest(int x, int y, int z, GroundPiece _ground)
-    {
-        newVertices.Add(new Vector3(x, y - 1, z + 1));
-        newVertices.Add(new Vector3(x, y, z + 1));
-        newVertices.Add(new Vector3(x, y, z));
-        newVertices.Add(new Vector3(x, y - 1, z));
-
-        AssignTexture( _ground, 3);
-    }
-    void CubeTop(int x, int y, int z, GroundPiece _ground)
-    {
-        newVertices.Add(new Vector3(x, y, z));
-        newVertices.Add(new Vector3(x, y, z + 1));
-        newVertices.Add(new Vector3(x + 1, y, z + 1));
-        newVertices.Add(new Vector3(x + 1, y, z));
-
-        AssignTexture(_ground, 4);
-    }
-    void CubeBottom(int x, int y, int z, GroundPiece _ground)
-    {
-        newVertices.Add(new Vector3(x, y - 1, z));
-        newVertices.Add(new Vector3(x + 1, y - 1, z));
-        newVertices.Add(new Vector3(x + 1, y - 1, z + 1));
-        newVertices.Add(new Vector3(x, y - 1, z + 1));
-
-        AssignTexture(_ground, 5); 
-    }
-
-    void AssignTexture(GroundPiece _ground, int _faceNum)
-    {
-
-        newTriangles.Add(faceCount * 4); //1
-        newTriangles.Add(faceCount * 4 + 1); //2
-        newTriangles.Add(faceCount * 4 + 2); //3
-        newTriangles.Add(faceCount * 4); //1
-        newTriangles.Add(faceCount * 4 + 2); //3
-        newTriangles.Add(faceCount * 4 + 3); //4
-
-        Vector2[] uvs = TextureUtil.GetGroundPieceTexture(_ground, _faceNum);
-        newUV.AddRange(uvs);
-
-        faceCount++;
-    }
+    
 }
 /*
  * 

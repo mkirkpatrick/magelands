@@ -24,6 +24,7 @@ public class GroundPiece {
     }
 
     public bool[] neighbors;
+    public bool isEdgePiece = false;
 
     public Vector3 position;
 

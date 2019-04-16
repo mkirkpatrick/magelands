@@ -16,13 +16,10 @@ public static class LandCreator
         HeightMapUtil.RoundMapCorners(newLand, 8, 6);
         newLand.heightMap = HeightMapUtil.RoughMapEdges(newLand.heightMap, 6, .04f, true);
 
-        //HeightMapUtil.RaiseMountain(newLand, new int[] { newLand.XSize / 2, newLand.ZSize / 2 }, new int[] { Mathf.RoundToInt( newLand.XSize * .75f ), Mathf.RoundToInt(newLand.ZSize * .75f) }, 4);
-        //HeightMapUtil.RaiseMountain(newLand, new int[] { 48, 48 }, new int[] { 40, 40 }, 12);
+        HeightMapUtil.RaiseMountain(newLand, new int[] { newLand.XSize / 2, newLand.ZSize / 2 }, new int[] { Mathf.RoundToInt( newLand.XSize * .75f ), Mathf.RoundToInt(newLand.ZSize * .75f) }, 4);
+        HeightMapUtil.RaiseMountain(newLand, new int[] { 48, 48 }, new int[] { 40, 40 }, 12);
 
-        int[,] newMap = HeightMapUtil.ExtractMapArea(newLand.heightMap, new int[] { 0, newLand.ZSize / 2 }, new int[] { newLand.XSize, newLand.ZSize / 2 });
-
-        newMap = HeightMapUtil.RaiseFloorValues(newMap, 8);
-        newLand.heightMap = HeightMapUtil.InsertMapIntoMap(newLand.heightMap, newMap, new int[] { 0, newLand.ZSize / 2 });
+        HeightMapUtil.RaiseMountain(newLand, new int[] { 48, 64 }, new int[] { 40, 40 }, 12);
 
         newLand.heightMap = HeightMapUtil.SmoothMap(newLand.heightMap);
 

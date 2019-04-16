@@ -18,6 +18,9 @@ public class Chunk_gameobj : MonoBehaviour
 
     private int faceCount;
 
+    // Child Objects
+    GameObject groundEdgeDetail;
+
     void Awake()
     {
         meshFilter = this.gameObject.AddComponent<MeshFilter>();
@@ -33,6 +36,8 @@ public class Chunk_gameobj : MonoBehaviour
         GenerateBlockMesh();
         UpdateBlockMesh();
 
+        GenerateGroundEdges();
+
         meshRend.sharedMaterial = Resources.Load("Environment/Materials/" + chunkData.landParent.Biome + "_Biome") as Material;
 
         float xHalf = chunkData.landParent.XSize / 2;
@@ -42,7 +47,7 @@ public class Chunk_gameobj : MonoBehaviour
 
     private void Init() {
 
-        GameObject groundEdgeDetail = new GameObject("Ground Edge Detail", typeof(MeshRenderer), typeof(MeshFilter));
+        groundEdgeDetail = new GameObject("Ground Edge Detail", typeof(MeshRenderer), typeof(MeshFilter));
 
         for (int x = 0; x < 32; x++) {
             for (int z = 0; z < 32; z++) {
@@ -147,7 +152,24 @@ public class Chunk_gameobj : MonoBehaviour
 
         faceCount = 0;
     }
-    
+
+    public void GenerateGroundEdges() {
+
+        List<GroundPiece> groundGrassEdges = new List<GroundPiece>();
+
+        foreach (GroundPiece ground in chunkData.groundPieces) {
+            if (ground.isEdgePiece == true && ground.neighbors[4] == false)
+                groundGrassEdges.Add(ground);
+        }
+
+        GameObject[] newEdgeDetails = MeshUtil.GenerateGrassEdges(groundGrassEdges.ToArray(), gameObject);
+
+        foreach (GameObject newObj in newEdgeDetails) {
+            newObj.transform.parent = transform;
+            newObj.GetComponent<MeshRenderer>().sharedMaterial = Resources.Load("Environment/Materials/" + newObj.name) as Material;
+        }
+            
+    }
 
     
 }

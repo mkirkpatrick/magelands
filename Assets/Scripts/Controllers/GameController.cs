@@ -20,7 +20,7 @@ public class GameController : MonoBehaviour {
             Destroy(this);
 
         landController.lands = new List<Land>();
-        landController.lands.Add( LandCreator.CreateLand( Land.BiomeType.Forest, new Vector3(0, 0, 0), 2, 2) );
+        landController.lands.Add( LandCreator.CreateLand( Land.BiomeType.Forest, new Vector3(0, 0, 0), 3, 3) );
     }
     void Start() {
 

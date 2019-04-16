@@ -52,6 +52,18 @@ public static class LandUtil
             _groundPiece.neighbors[4] = true;
         if (GetGroundPiece(_groundPiece.Land, new int[3] { x, y - 1, z }).Type != GroundPiece.GroundType.Empty)
             _groundPiece.neighbors[5] = true;
+
+        if (_groundPiece.Type != GroundPiece.GroundType.Empty) {
+            for (int i = 0; i < 4; i++)
+            {
+                if (_groundPiece.neighbors[i] == false)
+                {
+                    _groundPiece.isEdgePiece = true;
+                    break;
+                }
+            }
+        }
+        
     }
     public static GroundPiece[] GetEdgePieces(Land _land)
     {

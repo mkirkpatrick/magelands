@@ -110,77 +110,155 @@ public static class MeshUtil
         }
     }
 
-    public static Mesh[] GenerateGrassEdges(GroundPiece[] _groundPieces) {
+    public static GameObject[] GenerateGrassEdges(GroundPiece[] _groundPieces, GameObject _chunkParent) {
 
-        List<Mesh> newMeshes = new List<Mesh>();
-        int rotation = 0;
+        List<GameObject> newMeshes = new List<GameObject>();
+        List<CombineInstance> cornerCombines = new List<CombineInstance>();
+        List<CombineInstance> edgeCombines = new List<CombineInstance>();
 
         foreach (GroundPiece ground in _groundPieces) {
 
+            Vector3 localPosition = new Vector3((ground.position.x % 32) + .5f, ground.position.y % 16, (ground.position.z % 32) + .5f);
+
             if (ground.neighbors[0] == false) {
                 if (ground.neighbors[1] == false)
-                    // Load corner grass
+                    cornerCombines.Add( AddCombineInstance( GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Corner"), localPosition, 0 ) );
                 else if (ground.neighbors[3] == false) {
-                    // Load corner grass
-                    rotation = 270;
+                    cornerCombines.Add(AddCombineInstance(GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Corner"), localPosition, 270));
                 }
                 else
-                    // Load Edge Grass
+                    edgeCombines.Add(AddCombineInstance(GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Edge"), localPosition, 0));
             }
             else if (ground.neighbors[1] == false)
             {
                 if (ground.neighbors[0] == false)
-                    // Load corner grass
+                    cornerCombines.Add(AddCombineInstance(GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Corner"), localPosition, 0));
                 else if (ground.neighbors[2] == false) {
-                    // Load corner grass
-                    rotation = 90;
+                    cornerCombines.Add(AddCombineInstance(GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Corner"), localPosition, 90));
                 }
                 else {
-                    // Load Edge Grass
-                    rotation = 90;
+                    edgeCombines.Add(AddCombineInstance(GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Edge"), localPosition, 90));
                 }    
             }
             if (ground.neighbors[2] == false)
             {
                 if (ground.neighbors[1] == false)
                 {
-                    rotation = 90;
-                    // Load corner grass
+                    cornerCombines.Add(AddCombineInstance(GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Corner"), localPosition, 90));
                 }
                 else if (ground.neighbors[3] == false)
                 {
-                    // Load corner grass
-                    rotation = 180;
+                    cornerCombines.Add(AddCombineInstance(GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Corner"), localPosition, 180));
                 }
                 else {
-                    // Load Edge Grass
-                    rotation = 180;
+                    edgeCombines.Add(AddCombineInstance(GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Edge"), localPosition, 180));
                 }
             }
             if (ground.neighbors[3] == false)
             {
                 if (ground.neighbors[0] == false) {
-                    // Load corner grass
-                    rotation = 270;
+                    cornerCombines.Add(AddCombineInstance(GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Corner"), localPosition, 270));
                 }
                 else if (ground.neighbors[2] == false)
                 {
-                    // Load corner grass
-                    rotation = 180;
+                    cornerCombines.Add(AddCombineInstance(GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Corner"), localPosition, 180));
                 }
                 else
                 {
-                    // Load Edge Grass
-                    rotation = 270;
+                    edgeCombines.Add(AddCombineInstance(GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Edge"), localPosition, 270));
                 }
             }
         }
 
+        newMeshes.Add(CreateCombinedMesh(cornerCombines.ToArray(), _chunkParent.transform, "Grass_Corner"));
+        newMeshes.Add(CreateCombinedMesh(edgeCombines.ToArray(), _chunkParent.transform, "Grass_Edge"));
         return newMeshes.ToArray();
     }
 
+    static CombineInstance AddCombineInstance(GameObject _newMeshObj, Vector3 _position, float _rotation) {
+
+        CombineInstance newCombine = new CombineInstance();
+        newCombine.mesh = _newMeshObj.GetComponent<MeshFilter>().sharedMesh;
+        newCombine.transform = Matrix4x4.TRS(_position, Quaternion.Euler(0, _rotation, 0), Vector3.one);
+
+        _newMeshObj.SetActive(false);
+        return newCombine;
+    }
+    public static GameObject CreateCombinedMesh(CombineInstance[] _meshDataList, Transform _parentTransform, string _objectName = "Combined Mesh")
+    {
+        GameObject combinedMesh = new GameObject(_objectName, typeof(MeshFilter), typeof(MeshRenderer));
+
+        combinedMesh.transform.parent = _parentTransform;
+
+        Mesh newMesh = new Mesh();
+        newMesh.CombineMeshes(_meshDataList);
+        combinedMesh.GetComponent<MeshFilter>().mesh = newMesh;
+
+        return combinedMesh;
+    }
 
     //Textures
+    /*
+    Dictionary<string, List<GroundPiece>> groundPieceCollection = new Dictionary<string, List<GroundPiece>>();
 
+        foreach (GroundPiece groundPiece in chunkData.groundPieces)
+        {
+            if (groundPiece.Type == GroundPiece.GroundType.Empty)
+                continue;
+
+            if (groundPieceCollection.ContainsKey(groundPiece.orientationID) == true)
+            {
+                groundPieceCollection[groundPiece.orientationID].Add(groundPiece);
+}
+            else
+            {
+                groundPieceCollection.Add(groundPiece.orientationID, new List<GroundPiece>());
+                groundPieceCollection[groundPiece.orientationID].Add(groundPiece);
+            }
+        }
+
+        Mesh[] finalMesh = new Mesh[groundPieceCollection.Count];
+Material[] materials = new Material[groundPieceCollection.Count];
+int counter = 0;
+
+        foreach (KeyValuePair<string, List<GroundPiece>> combineList in groundPieceCollection)
+        {
+            CombineInstance[] combineArray = new CombineInstance[combineList.Value.Count];
+
+            for (int i = 0; i<combineList.Value.Count; i++)
+            {
+                GameObject obj = Instantiate(GameController.instance.database.groundDatabase.GetGroundPiece_GO(combineList.Value[i]), this.transform);
+obj.transform.localPosition += (combineList.Value[i].position);
+                obj.transform.localRotation = Quaternion.Euler(new Vector3(0, combineList.Value[i].rotation, 0));
+
+                CombineInstance combine = new CombineInstance();
+combine.mesh = obj.GetComponent<MeshFilter>().sharedMesh;
+                combine.transform = obj.transform.localToWorldMatrix;
+
+                combineArray[i] = combine;
+                obj.SetActive(false);
+            }
+            finalMesh[counter] = new Mesh();
+
+finalMesh[counter].CombineMeshes(combineArray);
+materials[counter] = Resources.Load("Environment/Materials/" + groundPieceCollection.Keys.ElementAt<string>(counter)) as Material;
+            counter++;
+        }
+
+        CombineInstance[] finalCombineArray = new CombineInstance[finalMesh.Length];
+
+        for (int i = 0; i<finalMesh.Length; i++)
+        {
+            CombineInstance combine = new CombineInstance();
+combine.mesh = finalMesh[i];
+            combine.transform = this.transform.localToWorldMatrix;
+            finalCombineArray[i] = combine;
+        }
+
+meshFilter.sharedMesh.CombineMeshes(finalCombineArray, false);
+
+        //Add Materials
+        meshRend.materials = materials;
+    */
 
 }

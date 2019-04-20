@@ -103,75 +103,39 @@ public static class TextureUtil
                 if (neighbors[0] == false)
                     newVectors = FlipTexture(newVectors, 1);
                 break;
+            case 4:
+                    newVectors = RotateTexture( newVectors, Random.Range(0,4) );
+                break;
         }
 
         return newVectors;
     }
-    static Vector2[] RotateTexture(Vector2[] vectors, GroundPiece _ground, int _face) {
+    static Vector2[] RotateTexture(Vector2[] _vectors, int _rotation) {
         Vector2[] newVectors = new Vector2[4];
-        int rotation = 0;
 
-        if (_face == 0) {
-            if (_ground.neighbors[1] == false)
-                rotation = 3;
-            else if (_ground.neighbors[3] == false)
-                rotation = 1;
-            else
-                rotation = 2;
-        }
-        else if (_face == 1)
-        {
-            if (_ground.neighbors[0] == false)
-                rotation = 1;
-            else if (_ground.neighbors[2] == false)
-                rotation = 3;
-            else
-                rotation = 2;
-        }
-        else if (_face == 2)
-        {
-            if (_ground.neighbors[1] == false)
-                rotation = 1;
-            else if (_ground.neighbors[3] == false)
-                rotation = 3;
-            else
-                rotation = 2;
-        }
-        else if (_face == 3)
-        {
-            if (_ground.neighbors[0] == false)
-                rotation = 3;
-            else if (_ground.neighbors[2] == false)
-                rotation = 1;
-            else
-                rotation = 2;
-        }
-
-
-        switch (rotation)
+        switch (_rotation)
         {
             case 1:
-                newVectors[0] = vectors[3];
-                newVectors[1] = vectors[0];
-                newVectors[2] = vectors[1];
-                newVectors[3] = vectors[2];
+                newVectors[0] = _vectors[3];
+                newVectors[1] = _vectors[0];
+                newVectors[2] = _vectors[1];
+                newVectors[3] = _vectors[2];
                 break;
             case 2:
-                newVectors[0] = vectors[2];
-                newVectors[1] = vectors[3];
-                newVectors[2] = vectors[0];
-                newVectors[3] = vectors[1];
+                newVectors[0] = _vectors[2];
+                newVectors[1] = _vectors[3];
+                newVectors[2] = _vectors[0];
+                newVectors[3] = _vectors[1];
                 break;
             case 3:
-                newVectors[0] = vectors[1];
-                newVectors[1] = vectors[2];
-                newVectors[2] = vectors[3];
-                newVectors[3] = vectors[0];
-                newVectors = FlipTexture(newVectors);
+                newVectors[0] = _vectors[1];
+                newVectors[1] = _vectors[2];
+                newVectors[2] = _vectors[3];
+                newVectors[3] = _vectors[0];
                 break;
 
             default:
-                newVectors = vectors;
+                newVectors = _vectors;
                 break;
         }
 

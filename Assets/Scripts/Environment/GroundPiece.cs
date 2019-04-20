@@ -17,23 +17,25 @@ public class GroundPiece {
     public enum GroundType { Empty, Surrounded, Dirt };
  
     private GroundType type;
-    public GroundType Type
-    {
-        get { return type; }
-        set { type = value; }
-    }
+    public GroundType Type { get; set; }
+
+    public Vector3 position;
 
     public bool[] neighbors;
     public bool isEdgePiece = false;
 
-    public Vector3 position;
-
-    public int rotation;
+    public List<GroundDecoration> decorations;
 
     public GroundPiece(Land _land, Vector3 _position, GroundType _groundType) {
         land = _land;
         position = _position;
         type = _groundType;
         neighbors = new bool[6];
+
+        decorations = new List<GroundDecoration>();
+    }
+
+    public void AddDecoration(GroundDecoration _decoration) {   
+        decorations.Add(_decoration);
     }
 }

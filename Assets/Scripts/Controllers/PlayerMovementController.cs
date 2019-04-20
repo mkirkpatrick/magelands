@@ -6,6 +6,9 @@ public class PlayerMovementController : MonoBehaviour
 {
     private Rigidbody rb;
 
+    public bool isWalking = false;
+    public bool isGrounded = false;
+
     public float moveSpeed;
     public Vector3 currentDestination;
 
@@ -37,8 +40,9 @@ public class PlayerMovementController : MonoBehaviour
         {
             Vector3 newPosition = Vector3.MoveTowards(transform.position, currentDestination, moveSpeed * Time.deltaTime);
             transform.position = newPosition;
+            transform.LookAt(new Vector3(currentDestination.x, transform.position.y, currentDestination.z));
         }
 
-        transform.LookAt(new Vector3(currentDestination.x, transform.position.y, currentDestination.z));
+        
     }
 }

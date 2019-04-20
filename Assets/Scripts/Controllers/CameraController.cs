@@ -3,26 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour {
-    public GameObject player;
 
-    //The offset of the camera to centrate the player in the X axis 
-    public float offsetX = -5;
-    //The offset of the camera to centrate the player in the Z axis 
-    public float offsetZ = 0;
-    //The maximum distance permited to the camera to be far from the player, its used to make a smooth movement 
-    public float maximumDistance = 2;
-    //The velocity of your player, used to determine que speed of the camera 
-    public float playerVelocity = 10;
+    public GameObject target;
+    public float damping = 3;
+    public Vector3 offset;
+    public Vector3 focus;
 
-    private float movementX;
-    private float movementZ;
+    Rigidbody rb;
 
-    // Update is called once per frame 
-    void Update()
+    void Start()
     {
-        movementX = ((player.transform.position.x + offsetX - this.transform.position.x)) / maximumDistance;
-        movementZ = ((player.transform.position.z + offsetZ - this.transform.position.z)) / maximumDistance;
-        this.transform.position += new Vector3((movementX * playerVelocity * Time.deltaTime), 0, (movementZ * playerVelocity * Time.deltaTime));
+        target = GameObject.Find("Player");
+        rb = target.GetComponent<Rigidbody>();
+        //offset = transform.position - target.transform.position;
+    }
+
+    void LateUpdate()
+    {
+        Vector3 desiredPosition = target.transform.position + offset;
+        Vector3 position = Vector3.Lerp(transform.position, desiredPosition, Time.deltaTime * damping);
+        transform.position = position;
+
+        transform.LookAt(target.transform.position + focus);
     }
 }
 

@@ -23,6 +23,7 @@ public static class LandCreator
 
         newLand.heightMap = HeightMapUtil.SmoothMap(newLand.heightMap);
 
+        // Generate ground from heightmap
         for (int x = 0; x < newLand.XSize; x++) {
             for (int z = 0; z < newLand.ZSize; z++) {
                 int height = newLand.heightMap[x, z];
@@ -40,8 +41,48 @@ public static class LandCreator
             LandUtil.AssignGroundPieceNeighbors(ground);
         }
 
-        //LandUtil.RemoveJutsAndHoles(newLand);
+        GenerateRocks(newLand);
 
         return newLand;
+    }
+
+    static void GenerateRocks(Land _land, float _rockiness = .1f) {
+
+        foreach (GroundPiece ground in _land.groundPieces) {
+
+            if (ground.isEdgePiece == true && Random.Range(0f, 1f) <= _rockiness)
+            {
+
+                List<int> openFaces = new List<int>();
+
+                for (int i = 0; i < 4; i++)
+                    if (ground.neighbors[i] == true)
+                        openFaces.Add(i);
+
+                int randomFace = openFaces[ Random.Range(0, openFaces.Count) ];
+
+                Vector3 offset = new Vector3();
+
+                switch (randomFace)
+                {
+                    case 0:
+                        offset = new Vector3(Random.Range(0f, 1f), Random.Range(-1f, 0f), 1f);
+                        break;
+                    case 1:
+                        offset = new Vector3(1f, Random.Range(-1f, 0f), Random.Range(0f, 1f) );
+                        break;
+                    case 2:
+                        offset = new Vector3(Random.Range(0f, 1f), Random.Range(-1f, 0f), 1f);
+                        break;
+                    case 3:
+                        offset = new Vector3( 1f, Random.Range(-1f, 0f), Random.Range(0f, 1f) );
+                        break;
+                }
+
+            
+                ground.AddDecoration( new GroundDecoration( offset ) );
+            }
+        }
+
     }
 }

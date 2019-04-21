@@ -19,8 +19,6 @@ public static class LandCreator
         HeightMapUtil.RaiseMountain(newLand, new int[] { newLand.XSize / 2, newLand.ZSize / 2 }, new int[] { Mathf.RoundToInt( newLand.XSize * .75f ), Mathf.RoundToInt(newLand.ZSize * .75f) }, 4);
         HeightMapUtil.RaiseMountain(newLand, new int[] { 48, 48 }, new int[] { 40, 40 }, 12);
 
-        HeightMapUtil.RaiseMountain(newLand, new int[] { 48, 64 }, new int[] { 40, 40 }, 12);
-
         newLand.heightMap = HeightMapUtil.SmoothMap(newLand.heightMap);
 
         // Generate ground from heightmap

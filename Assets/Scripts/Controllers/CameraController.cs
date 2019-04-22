@@ -5,9 +5,13 @@ using UnityEngine;
 public class CameraController : MonoBehaviour {
 
     public GameObject target;
-    public float damping = 3;
-    public Vector3 offset;
-    public Vector3 focus;
+
+    public float cameraHeight = 10f;
+    public float cameraDistance = 10;
+
+    public float orbitAngle = 45f;
+    public float targetOrbitAngle = 0;
+    public float orbitSpeed = 10f; // Negative to rotate backwards
 
     Rigidbody rb;
 
@@ -18,13 +22,24 @@ public class CameraController : MonoBehaviour {
         //offset = transform.position - target.transform.position;
     }
 
+    void Update() {
+        
+        if (orbitAngle != targetOrbitAngle)
+            orbitAngle += (orbitSpeed * Time.deltaTime);
+
+        if (Mathf.Abs(targetOrbitAngle - orbitAngle) <= 1f)
+            orbitAngle = targetOrbitAngle;
+
+        if (orbitAngle > 360)
+            orbitAngle -= 360;
+
+    }
+
     void LateUpdate()
     {
-        Vector3 desiredPosition = target.transform.position + offset;
-        Vector3 position = Vector3.Lerp(transform.position, desiredPosition, Time.deltaTime * damping);
-        transform.position = position;
-
-        transform.LookAt(target.transform.position + focus);
+        float radians = Mathf.Deg2Rad * orbitAngle;
+        transform.position = new Vector3( Mathf.Cos(radians) * cameraDistance, cameraHeight, Mathf.Sin(radians) * cameraDistance ) + target.transform.position;
+        transform.LookAt(target.transform.position);
     }
 }
 

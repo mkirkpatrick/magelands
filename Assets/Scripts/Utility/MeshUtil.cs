@@ -119,53 +119,55 @@ public static class MeshUtil
         foreach (GroundPiece ground in _groundPieces) {
 
             Vector3 localPosition = new Vector3((ground.position.x % 32) + .5f, ground.position.y % 16, (ground.position.z % 32) + .5f);
+            Mesh grassEdge = GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Edge").GetComponent<MeshFilter>().sharedMesh;
+            Mesh grassCorner = GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Corner").GetComponent<MeshFilter>().sharedMesh;
 
             if (ground.neighbors[0] == false) {
                 if (ground.neighbors[1] == false)
-                    cornerCombines.Add( AddCombineInstance( GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Corner"), localPosition, 0 ) );
+                    cornerCombines.Add( AddCombineInstance( grassCorner, localPosition, 0 ) );
                 else if (ground.neighbors[3] == false) {
-                    cornerCombines.Add(AddCombineInstance(GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Corner"), localPosition, 270));
+                    cornerCombines.Add(AddCombineInstance( grassCorner, localPosition, 270));
                 }
                 else
-                    edgeCombines.Add(AddCombineInstance(GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Edge"), localPosition, 0));
+                    edgeCombines.Add(AddCombineInstance( grassEdge, localPosition, 0));
             }
             else if (ground.neighbors[1] == false)
             {
                 if (ground.neighbors[0] == false)
-                    cornerCombines.Add(AddCombineInstance(GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Corner"), localPosition, 0));
+                    cornerCombines.Add(AddCombineInstance( grassCorner, localPosition, 0));
                 else if (ground.neighbors[2] == false) {
-                    cornerCombines.Add(AddCombineInstance(GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Corner"), localPosition, 90));
+                    cornerCombines.Add(AddCombineInstance( grassCorner, localPosition, 90));
                 }
                 else {
-                    edgeCombines.Add(AddCombineInstance(GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Edge"), localPosition, 90));
+                    edgeCombines.Add(AddCombineInstance( grassEdge, localPosition, 90));
                 }    
             }
             if (ground.neighbors[2] == false)
             {
                 if (ground.neighbors[1] == false)
                 {
-                    cornerCombines.Add(AddCombineInstance(GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Corner"), localPosition, 90));
+                    cornerCombines.Add(AddCombineInstance( grassCorner, localPosition, 90));
                 }
                 else if (ground.neighbors[3] == false)
                 {
-                    cornerCombines.Add(AddCombineInstance(GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Corner"), localPosition, 180));
+                    cornerCombines.Add(AddCombineInstance( grassCorner, localPosition, 180));
                 }
                 else {
-                    edgeCombines.Add(AddCombineInstance(GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Edge"), localPosition, 180));
+                    edgeCombines.Add(AddCombineInstance( grassEdge, localPosition, 180));
                 }
             }
             if (ground.neighbors[3] == false)
             {
                 if (ground.neighbors[0] == false) {
-                    cornerCombines.Add(AddCombineInstance(GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Corner"), localPosition, 270));
+                    cornerCombines.Add(AddCombineInstance( grassCorner, localPosition, 270));
                 }
                 else if (ground.neighbors[2] == false)
                 {
-                    cornerCombines.Add(AddCombineInstance(GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Corner"), localPosition, 180));
+                    cornerCombines.Add(AddCombineInstance( grassCorner, localPosition, 180));
                 }
                 else
                 {
-                    edgeCombines.Add(AddCombineInstance(GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Edge"), localPosition, 270));
+                    edgeCombines.Add(AddCombineInstance( grassEdge, localPosition, 270));
                 }
             }
         }
@@ -175,13 +177,12 @@ public static class MeshUtil
         return newMeshes.ToArray();
     }
 
-    static CombineInstance AddCombineInstance(GameObject _newMeshObj, Vector3 _position, float _rotation) {
+    public static CombineInstance AddCombineInstance(Mesh _newMesh, Vector3 _position, float _rotation) {
 
         CombineInstance newCombine = new CombineInstance();
-        newCombine.mesh = _newMeshObj.GetComponent<MeshFilter>().sharedMesh;
+        newCombine.mesh = _newMesh;
         newCombine.transform = Matrix4x4.TRS(_position, Quaternion.Euler(0, _rotation, 0), Vector3.one);
 
-        _newMeshObj.SetActive(false);
         return newCombine;
     }
     public static GameObject CreateCombinedMesh(CombineInstance[] _meshDataList, Transform _parentTransform, string _objectName = "Combined Mesh")

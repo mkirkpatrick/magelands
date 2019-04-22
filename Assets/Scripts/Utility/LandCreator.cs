@@ -39,7 +39,7 @@ public static class LandCreator
             LandUtil.AssignGroundPieceNeighbors(ground);
         }
 
-        GenerateRocks(newLand);
+        GenerateRocks(newLand, .005f);
 
         return newLand;
     }
@@ -47,38 +47,48 @@ public static class LandCreator
     static void GenerateRocks(Land _land, float _rockiness = .1f) {
 
         foreach (GroundPiece ground in _land.groundPieces) {
+            if (ground.Type == GroundPiece.GroundType.Empty)
+                continue;
 
-            if (ground.isEdgePiece == true && Random.Range(0f, 1f) <= _rockiness)
+            if (ground.isEdgePiece == true && Random.Range(0f, 1f) <= (_rockiness * 5) ) //Sides are rockier than tops
             {
 
                 List<int> openFaces = new List<int>();
 
                 for (int i = 0; i < 4; i++)
-                    if (ground.neighbors[i] == true)
+                    if (ground.neighbors[i] == false)
                         openFaces.Add(i);
 
-                int randomFace = openFaces[ Random.Range(0, openFaces.Count) ];
+                int randomFace = openFaces[Random.Range(0, openFaces.Count)];
 
                 Vector3 offset = new Vector3();
 
                 switch (randomFace)
                 {
                     case 0:
-                        offset = new Vector3(Random.Range(0f, 1f), Random.Range(-1f, 0f), 1f);
+                        offset = new Vector3(Random.Range(.2f, .8f), Random.Range(-.5f, -1f), Random.Range(.8f, 1));
                         break;
                     case 1:
-                        offset = new Vector3(1f, Random.Range(-1f, 0f), Random.Range(0f, 1f) );
+                        offset = new Vector3(Random.Range(.8f, 1), Random.Range(-.5f, -1f), Random.Range(.2f, .8f));
                         break;
                     case 2:
-                        offset = new Vector3(Random.Range(0f, 1f), Random.Range(-1f, 0f), 1f);
+                        offset = new Vector3(Random.Range(.2f, .8f), Random.Range(-.5f, -1f), Random.Range(0, .2f));
                         break;
                     case 3:
-                        offset = new Vector3( 1f, Random.Range(-1f, 0f), Random.Range(0f, 1f) );
+                        offset = new Vector3(Random.Range(0, .2f), Random.Range(-.5f, -1f), Random.Range(.2f, .8f));
                         break;
                 }
 
-            
-                ground.AddDecoration( new GroundDecoration( offset ) );
+                int rotation = Random.Range(0, 4) * 90;
+                ground.AddDecoration(new GroundDecoration(offset, rotation));
+            }
+            else {
+                if (ground.neighbors[4] == false && Random.Range(0f, 1f) <= _rockiness) {
+                    Vector3 offset = new Vector3(Random.Range(.1f, .9f), 0, Random.Range(.1f, .9f));
+                    int rotation = Random.Range(0, 360);
+
+                    ground.decorations.Add( new GroundDecoration(offset, rotation) );
+                }
             }
         }
 

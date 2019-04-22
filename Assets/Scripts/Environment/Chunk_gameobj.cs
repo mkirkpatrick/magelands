@@ -171,20 +171,34 @@ public class Chunk_gameobj : MonoBehaviour
     }
 
     public void UpdateRocks() {
+
+        Mesh rockMesh = GameController.instance.database.groundDatabase.GetRock_GO("Rock1").GetComponent<MeshFilter>().sharedMesh;
+        List<CombineInstance> combineRocks = new List<CombineInstance>();
+
         for(int x = 0; x < 32; x++) {
             for (int z = 0; z < 32; z++) {
                 for (int y = 0; y < 16; y++)
                 {
                     if (chunkData.groundPieces[x, y, z].decorations.Count > 0)
                     {
+                        GroundDecoration newDecor = chunkData.groundPieces[x, y, z].decorations[0];
+
+                        combineRocks.Add( MeshUtil.AddCombineInstance(rockMesh, new Vector3(x,y,z) + newDecor.localPosition, newDecor.rotation ) );
+
+                        /*
                         GameObject newRock = Instantiate( GameController.instance.database.groundDatabase.GetRock_GO("Rock1"), transform );
                         Vector3 offset = chunkData.groundPieces[x, y, z].decorations[0].localPosition;
 
                         newRock.transform.localPosition = new Vector3(x + offset.x, y + offset.y, z + offset.z);
+                        newRock.transform.eulerAngles = new Vector3(0, chunkData.groundPieces[x, y, z].decorations[0].rotation, 0);
+                        */
                     }
                 }
             }
         }
+        GameObject newRocks = MeshUtil.CreateCombinedMesh(combineRocks.ToArray(), transform, "Rock1");
+        newRocks.GetComponent<MeshRenderer>().sharedMaterial = Resources.Load("Environment/Materials/" + newRocks.name) as Material;
+        newRocks.AddComponent<MeshCollider>();
     }
     
 }

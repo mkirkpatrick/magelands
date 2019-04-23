@@ -5,16 +5,20 @@ using UnityEngine;
 public static class HeightMapUtil
 {
     // Creation
-    public static void RaiseSquare(Land _land, int[] _position, int[] _size, int height) {
+    public static int[,] RaiseSquare(int[,] _map, int[] _position, int[] _size, int height) {
+        int[,] newMap = _map;
+
         for (int x = _position[0]; x < _position[0] + _size[0]; x++) {
             for (int y = _position[1]; y < _position[1] + _size[1]; y++) {
-                _land.heightMap[x, y] = height;
+                newMap[x, y] = height;
             }
         }
+        return newMap;
     }
-    public static void RoundMapCorners(Land _land, int insetValue, int iterations = 1)
+    public static int[,] RoundMapCorners(int[,] _map, int insetValue, int iterations = 1)
     {
-
+        int[,] newMap = _map;
+        int[] size = new int[] { newMap.GetLength(0), newMap.GetLength(1) };
         int xCount = 0;
         int zCount = 0;
 
@@ -32,7 +36,7 @@ public static class HeightMapUtil
                 {
                     for (int z = 0; z < area.y; z++)
                     {
-                        _land.heightMap[x, z] = 0;
+                        newMap[x, z] = 0;
                     }
                 }
                 xCount += (int)area.x;
@@ -43,7 +47,7 @@ public static class HeightMapUtil
                 {
                     for (int z = zCount; z < zCount + area.y; z++)
                     {
-                        _land.heightMap[x, z] = 0;
+                        newMap[x, z] = 0;
                     }
                 }
                 zCount += (int)area.y;
@@ -56,7 +60,7 @@ public static class HeightMapUtil
                 {
                     for (int z = 0; z < area.y; z++)
                     {
-                        _land.heightMap[x, z] = 0;
+                        _map[x, z] = 0;
                     }
                 }
                 xCount = (int)area.x;
@@ -74,9 +78,9 @@ public static class HeightMapUtil
 
                 for (int x = xCount; x < xCount + area.x; x++)
                 {
-                    for (int z = _land.ZSize - (int)area.y; z < _land.ZSize; z++)
+                    for (int z = size[1] - (int)area.y; z < size[1]; z++)
                     {
-                        _land.heightMap[x, z] = 0;
+                        newMap[x, z] = 0;
                     }
                 }
                 xCount += (int)area.x;
@@ -85,9 +89,9 @@ public static class HeightMapUtil
 
                 for (int x = 0; x < area.x; x++)
                 {
-                    for (int z = _land.ZSize - ((int)area.y + zCount); z < _land.ZSize; z++)
+                    for (int z = size[1] - ((int)area.y + zCount); z < size[1]; z++)
                     {
-                        _land.heightMap[x, z] = 0;
+                        newMap[x, z] = 0;
                     }
                 }
                 zCount += (int)area.y;
@@ -98,9 +102,9 @@ public static class HeightMapUtil
 
                 for (int x = 0; x < area.x; x++)
                 {
-                    for (int z = _land.ZSize - (int)area.y; z < _land.ZSize; z++)
+                    for (int z = size[1] - (int)area.y; z < size[1]; z++)
                     {
-                        _land.heightMap[x, z] = 0;
+                        newMap[x, z] = 0;
                     }
                 }
                 xCount = (int)area.x;
@@ -116,22 +120,22 @@ public static class HeightMapUtil
                 int smallerInset = insetValue - (i * 2);
                 area = new Vector2(Random.Range(smallerInset - 1, smallerInset + 2), Random.Range(smallerInset - 1, smallerInset + 2));
 
-                for (int x = _land.XSize - ((int)area.x + xCount); x < _land.XSize; x++)
+                for (int x = size[0] - ((int)area.x + xCount); x < size[0]; x++)
                 {
-                    for (int z = _land.ZSize - (int)area.y; z < _land.ZSize; z++)
+                    for (int z = size[1] - (int)area.y; z < size[1]; z++)
                     {
-                        _land.heightMap[x, z] = 0;
+                        newMap[x, z] = 0;
                     }
                 }
                 xCount += (int)area.x;
 
                 area = new Vector2(Random.Range(smallerInset - 1, smallerInset + 2), Random.Range(smallerInset - 1, smallerInset + 2));
 
-                for (int x = _land.XSize - (int)area.x; x < _land.XSize; x++)
+                for (int x = size[0] - (int)area.x; x < size[0]; x++)
                 {
-                    for (int z = _land.ZSize - ((int)area.y + zCount); z < _land.ZSize; z++)
+                    for (int z = size[1] - ((int)area.y + zCount); z < size[1]; z++)
                     {
-                        _land.heightMap[x, z] = 0;
+                        newMap[x, z] = 0;
                     }
                 }
                 zCount += (int)area.y;
@@ -140,11 +144,11 @@ public static class HeightMapUtil
             {
                 area = new Vector2(Random.Range(insetValue - 1, insetValue + 2), Random.Range(insetValue - 1, insetValue + 2));
 
-                for (int x = _land.XSize - (int)area.x; x < _land.XSize; x++)
+                for (int x = size[0] - (int)area.x; x < size[0]; x++)
                 {
-                    for (int z = _land.ZSize - (int)area.y; z < _land.ZSize; z++)
+                    for (int z = size[1] - (int)area.y; z < size[1]; z++)
                     {
-                        _land.heightMap[x, z] = 0;
+                        newMap[x, z] = 0;
                     }
                 }
                 xCount = (int)area.x;
@@ -160,22 +164,22 @@ public static class HeightMapUtil
                 int smallerInset = insetValue - (i * 2);
                 area = new Vector2(Random.Range(smallerInset - 1, smallerInset + 2), Random.Range(smallerInset - 1, smallerInset + 2));
 
-                for (int x = _land.XSize - ((int)area.x + xCount); x < _land.XSize; x++)
+                for (int x = size[0] - ((int)area.x + xCount); x < size[0]; x++)
                 {
                     for (int z = 0; z < area.y; z++)
                     {
-                        _land.heightMap[x, z] = 0;
+                        newMap[x, z] = 0;
                     }
                 }
                 xCount += (int)area.x;
 
                 area = new Vector2(Random.Range(smallerInset - 1, smallerInset + 2), Random.Range(smallerInset - 1, smallerInset + 2));
 
-                for (int x = _land.XSize - (int)area.x; x < _land.XSize; x++)
+                for (int x = size[0] - (int)area.x; x < size[0]; x++)
                 {
                     for (int z = zCount; z < area.y + zCount; z++)
                     {
-                        _land.heightMap[x, z] = 0;
+                        newMap[x, z] = 0;
                     }
                 }
                 zCount += (int)area.y;
@@ -184,11 +188,11 @@ public static class HeightMapUtil
             {
                 area = new Vector2(Random.Range(insetValue - 1, insetValue + 2), Random.Range(insetValue - 1, insetValue + 2));
 
-                for (int x = _land.XSize - (int)area.x; x < _land.XSize; x++)
+                for (int x = size[0] - (int)area.x; x < size[0]; x++)
                 {
                     for (int z = 0; z < area.y; z++)
                     {
-                        _land.heightMap[x, z] = 0;
+                        newMap[x, z] = 0;
                     }
                 }
                 xCount = (int)area.x;
@@ -196,6 +200,7 @@ public static class HeightMapUtil
             }
         }
 
+        return newMap;
     }
     public static void RaiseMountain(Land _land, int[] _position, int[] _size, int height) {
 

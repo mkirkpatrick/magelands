@@ -26,6 +26,8 @@ public class Land {
     public int[,] heightMap;
 
     public GroundPiece[,,] groundPieces;
+    public Area[] areas;
+    public Vector2[] linkageLocations;
 
     public Land(Vector3 _worldPosition, int _xSize, int _zSize) {
 
@@ -47,5 +49,8 @@ public class Land {
                 }
             }
         }
+
+        //TODO: Make dynamic. West, North, and South for now.
+        linkageLocations = new Vector2[3] { new Vector2(4, ZSize / 2), new Vector2(XSize / 2, ZSize - 4), new Vector2(XSize / 2, 4)};
     }
 }

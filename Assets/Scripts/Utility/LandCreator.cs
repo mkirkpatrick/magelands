@@ -8,7 +8,7 @@ public static class LandCreator
         Land newLand = new Land(_position, _xSize, _zSize);
 
         newLand.Biome = _biomeType;
-       
+
         //LandUtil.ElevateLand(newLand, 6, .025f);
 
         newLand.heightMap = HeightMapUtil.RaiseSquare(newLand.heightMap, new int[] { 0, 0 }, new int[] { newLand.XSize, newLand.ZSize }, newLand.levelHeight);
@@ -40,9 +40,24 @@ public static class LandCreator
         return newLand;
     }
 
-    static void GenerateAreas() {
+    static void GenerateAreas(Land _land, int[] _horizontalDivisions, int[] _verticalDivisions) {
+
+
+        for (int h = 0; h < _horizontalDivisions.Length; h++) {
+
+            for (int v = 0; v < _verticalDivisions.Length; v++) {
+                if (h == _horizontalDivisions.Length - 1)
+                    hSize = _land.ZSize;
+
+                _land.areas.Add(new Area(new Vector2(h,v) );
+            }
+        }
+    }
+
+    static void GeneratePaths() {
 
     }
+
     static void GenerateRocks(Land _land, float _rockiness = .1f) {
 
         foreach (GroundPiece ground in _land.groundPieces) {

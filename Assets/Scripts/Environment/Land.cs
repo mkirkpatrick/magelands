@@ -26,8 +26,8 @@ public class Land {
     public int[,] heightMap;
 
     public GroundPiece[,,] groundPieces;
-    public Area[] areas;
-    public Vector2[] linkageLocations;
+    public List<Area> areas;
+    public PathSystem pathSystem;
 
     public Land(Vector3 _worldPosition, int _xSize, int _zSize) {
 
@@ -50,7 +50,7 @@ public class Land {
             }
         }
 
-        //TODO: Make dynamic. West, North, and South for now.
-        linkageLocations = new Vector2[3] { new Vector2(4, ZSize / 2), new Vector2(XSize / 2, ZSize - 4), new Vector2(XSize / 2, 4)};
+        //TODO: Make dynamic. West, North, South, and Crossroads for now.
+        //pathSystem.paths = new Vector2[4] { new Vector2(4, ZSize / 2), new Vector2(XSize / 2, ZSize - 4), new Vector2(XSize / 2, 4), new Vector2(XSize, ZSize)};
     }
 }

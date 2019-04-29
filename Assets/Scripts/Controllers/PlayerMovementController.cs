@@ -11,6 +11,7 @@ public class PlayerMovementController : MonoBehaviour
 
     public float moveSpeed;
     public Vector3 currentDestination;
+    public Quaternion lookRotation;
 
     void Awake() {
         rb = GetComponent<Rigidbody>();
@@ -36,13 +37,17 @@ public class PlayerMovementController : MonoBehaviour
             }  
         }
 
-        if (currentDestination != transform.position)
+        if (Vector3.Distance(currentDestination, transform.position) > .005f)
         {
             Vector3 newPosition = Vector3.MoveTowards(transform.position, currentDestination, moveSpeed * Time.deltaTime);
             transform.position = newPosition;
+            Vector3 lookVector = (currentDestination - newPosition).normalized;  
             transform.LookAt(new Vector3(currentDestination.x, transform.position.y, currentDestination.z));
         }
+        else {
+            transform.position = currentDestination;
+            transform.LookAt(transform.position + transform.forward);
 
-        
+        }
     }
 }

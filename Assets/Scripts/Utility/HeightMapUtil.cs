@@ -5,11 +5,14 @@ using UnityEngine;
 public static class HeightMapUtil
 {
     // Creation
-    public static int[,] RaiseSquare(int[,] _map, int[] _position, int[] _size, int height) {
+    public static int[,] RaiseSquare(int[,] _map, int[] _position, int[] _size, int height, bool ignoreZero = false) {
         int[,] newMap = _map;
 
         for (int x = _position[0]; x < _position[0] + _size[0]; x++) {
             for (int y = _position[1]; y < _position[1] + _size[1]; y++) {
+                if (ignoreZero == true && newMap[x, y] == 0)
+                    continue;
+
                 newMap[x, y] = height;
             }
         }

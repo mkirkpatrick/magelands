@@ -14,7 +14,7 @@ public class GroundPiece {
 
     public Chunk chunkParent;
 
-    public enum GroundType { Empty, Surrounded, Dirt };
+    public enum GroundType { Empty, Surrounded, Dirt, Path };
  
     private GroundType type;
     public GroundType Type { get; set; }

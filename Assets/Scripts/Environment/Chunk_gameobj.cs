@@ -34,6 +34,7 @@ public class Chunk_gameobj : MonoBehaviour
         UpdateBlockMesh();
 
         GenerateGroundEdges();
+        GeneratePathEdges();
 
         UpdateRocks();
 
@@ -157,7 +158,7 @@ public class Chunk_gameobj : MonoBehaviour
         List<GroundPiece> groundGrassEdges = new List<GroundPiece>();
 
         foreach (GroundPiece ground in chunkData.groundPieces) {
-            if (ground.isEdgePiece == true && ground.neighbors[4] == false)
+            if (ground.Type == GroundPiece.GroundType.Dirt && ground.isEdgePiece == true && ground.neighbors[4] == false)
                 groundGrassEdges.Add(ground);
         }
 
@@ -169,7 +170,26 @@ public class Chunk_gameobj : MonoBehaviour
         }
             
     }
+    public void GeneratePathEdges() {
+        List<GroundPiece> pathEdges = new List<GroundPiece>();
 
+        foreach (GroundPiece ground in chunkData.groundPieces)
+        {
+            if ( ground.Type == GroundPiece.GroundType.Path )
+                pathEdges.Add(ground);
+        }
+
+        if (pathEdges.Count == 0)
+            return;
+
+        GameObject[] newPathEdges = MeshUtil.GeneratePathEdges(pathEdges.ToArray(), chunkData.landParent, gameObject);
+
+        foreach (GameObject newObj in newPathEdges)
+        {
+            newObj.transform.parent = transform;
+            newObj.GetComponent<MeshRenderer>().sharedMaterial = Resources.Load("Environment/Materials/" + newObj.name) as Material;
+        }
+    }
     public void UpdateRocks() {
 
         Mesh rockMesh = GameController.instance.database.groundDatabase.GetRock_GO("Rock1").GetComponent<MeshFilter>().sharedMesh;
@@ -184,14 +204,6 @@ public class Chunk_gameobj : MonoBehaviour
                         GroundDecoration newDecor = chunkData.groundPieces[x, y, z].decorations[0];
 
                         combineRocks.Add( MeshUtil.AddCombineInstance(rockMesh, new Vector3(x,y,z) + newDecor.localPosition, newDecor.rotation ) );
-
-                        /*
-                        GameObject newRock = Instantiate( GameController.instance.database.groundDatabase.GetRock_GO("Rock1"), transform );
-                        Vector3 offset = chunkData.groundPieces[x, y, z].decorations[0].localPosition;
-
-                        newRock.transform.localPosition = new Vector3(x + offset.x, y + offset.y, z + offset.z);
-                        newRock.transform.eulerAngles = new Vector3(0, chunkData.groundPieces[x, y, z].decorations[0].rotation, 0);
-                        */
                     }
                 }
             }

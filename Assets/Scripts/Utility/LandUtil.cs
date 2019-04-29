@@ -14,9 +14,15 @@ public static class LandUtil
         }
             
     }
-    public static GroundPiece[] GetNeighborGroundPieces(GroundPiece _ground, bool diagonals = false)
+    public static GroundPiece[] GetNeighborGroundPieces(GroundPiece _ground, bool verticals = true, bool diagonals = false)
     {
-        GroundPiece[] groundPieces = new GroundPiece[6];
+        GroundPiece[] groundPieces;
+        if (verticals == true)
+            groundPieces = new GroundPiece[6];
+        else
+            groundPieces = new GroundPiece[4];
+
+
         int x = (int)_ground.position.x;
         int y = (int)_ground.position.y;
         int z = (int)_ground.position.z;
@@ -27,9 +33,12 @@ public static class LandUtil
         groundPieces[1] = GetGroundPiece(_ground.Land, new int[] { x + 1, y, z });
         groundPieces[2] = GetGroundPiece(_ground.Land, new int[] { x, y, z - 1 });
         groundPieces[3] = GetGroundPiece(_ground.Land, new int[] { x - 1, y, z });
-        groundPieces[4] = GetGroundPiece(_ground.Land, new int[] { x, y + 1, z });
-        groundPieces[5] = GetGroundPiece(_ground.Land, new int[] { x, y - 1, z });
 
+        if (verticals == true) {
+            groundPieces[4] = GetGroundPiece(_ground.Land, new int[] { x, y + 1, z });
+            groundPieces[5] = GetGroundPiece(_ground.Land, new int[] { x, y - 1, z });
+        }
+        
         // Diagonals     TODO: Add diagonals if needed.
 
         return groundPieces;

@@ -79,6 +79,10 @@ public static class TextureUtil
                 }
 
                 break;
+
+            case GroundPiece.GroundType.Path:
+                texturePosition = new Vector2(0, 0);
+                break;
         }
         return texturePosition;
     }

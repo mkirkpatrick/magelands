@@ -9,23 +9,29 @@ public static class LandCreator
 
         newLand.Biome = _biomeType;
 
-        //LandUtil.ElevateLand(newLand, 6, .025f);
-
+        //Initial land shape
         newLand.heightMap = HeightMapUtil.RaiseSquare(newLand.heightMap, new int[] { 0, 0 }, new int[] { newLand.XSize, newLand.ZSize }, newLand.levelHeight);
         newLand.heightMap = HeightMapUtil.RoundMapCorners(newLand.heightMap, 8, 6);
         newLand.heightMap = HeightMapUtil.RoughMapEdges(newLand.heightMap, 6, .04f, true);
 
+        //Land detailing
+        GenerateAreas(newLand, new int[] { 0, 30, 58, newLand.XSize }, new int[] { 0, 30, 72, newLand.ZSize });
+        
+
         newLand.heightMap = HeightMapUtil.SmoothMap(newLand.heightMap);
+
+        GeneratePaths(newLand);
 
         // Generate ground from heightmap
         for (int x = 0; x < newLand.XSize; x++) {
             for (int z = 0; z < newLand.ZSize; z++) {
                 int height = newLand.heightMap[x, z];
 
-                if (height == 0)
+                if (height <= 0)
                     continue;
 
-                for (int h = 0; h < height; h++) {
+                for (int h = 0; h <= height; h++) {
+                    if(newLand.groundPieces[x, h, z].Type == GroundPiece.GroundType.Empty)
                     newLand.groundPieces[x, h, z].Type = GroundPiece.GroundType.Dirt;
                 }
             }
@@ -35,6 +41,7 @@ public static class LandCreator
             LandUtil.AssignGroundPieceNeighbors(ground);
         }
 
+        
         GenerateRocks(newLand, .005f);
 
         return newLand;
@@ -42,22 +49,65 @@ public static class LandCreator
 
     static void GenerateAreas(Land _land, int[] _horizontalDivisions, int[] _verticalDivisions) {
 
+        _land.areas = new Area[ _horizontalDivisions.Length - 1, _verticalDivisions.Length - 1];
 
-        for (int h = 0; h < _horizontalDivisions.Length; h++) {
+        for (int h = 0; h < _horizontalDivisions.Length - 1; h++) {
+            for (int v = 0; v < _verticalDivisions.Length - 1; v++) {
 
-            for (int v = 0; v < _verticalDivisions.Length; v++) {
-                if (h == _horizontalDivisions.Length - 1)
-                    hSize = _land.ZSize;
+                int hSize = _horizontalDivisions[h + 1] - _horizontalDivisions[h];
+                int vSize = _verticalDivisions[v + 1] - _verticalDivisions[v];
 
-                _land.areas.Add(new Area(new Vector2(h,v) );
+               _land.areas[h,v] = new Area( new int[2] { _horizontalDivisions[h], _verticalDivisions[v] }, new int[2]{ hSize, vSize } , Random.Range(_land.levelHeight - 1, _land.levelHeight + 5 ) );
             }
+        }
+
+        //Shift each area size a bit
+        for(int x = 0; x < _land.areas.GetLength(0); x++)
+        {
+            for (int z = 0; z < _land.areas.GetLength(1); z++)
+            {
+                int xRand = Random.Range(-4, 5);
+                int zRand = Random.Range(-4, 5);
+
+                _land.areas[x,z].size[0] += xRand;
+                _land.areas[x,z].size[1] += zRand;
+
+                //Shift neighboring position according to size change
+                if (x == _land.areas.GetLength(0) - 1) {
+                    _land.areas[x, z].size[0] = _land.XSize - _land.areas[x, z].position[0];
+                }   
+                else
+                    _land.areas[x + 1, z].position[0] += (xRand * -1);
+
+                if (z == _land.areas.GetLength(1) - 1)
+                    _land.areas[x, z].size[1] = _land.ZSize - _land.areas[x, z].position[1];
+                else
+                    _land.areas[x, z + 1].position[1] += (zRand * -1);
+
+            }
+        }
+
+        foreach (Area area in _land.areas) {
+            _land.heightMap = HeightMapUtil.RaiseSquare(_land.heightMap, area.position, area.size, area.height, true);
+
+            int[,] areaMap = HeightMapUtil.ExtractMapArea(_land.heightMap, area.position, area.size);
+            areaMap = HeightMapUtil.RoughMapEdges(areaMap, 2, .1f);
+            _land.heightMap = HeightMapUtil.InsertMapIntoMap(_land.heightMap, areaMap, area.position);
+
         }
     }
 
-    static void GeneratePaths() {
+    static void GeneratePaths(Land _land) {
+        _land.pathSystem = new PathSystem( _land, new Vector2[3] { new Vector2(0, Random.Range(0, _land.ZSize)), new Vector2(Random.Range(0, _land.XSize), 0), new Vector2( _land.XSize, Random.Range( 0, _land.ZSize)) }, new Vector2(_land.XSize / 2, _land.ZSize / 2));
+        for (int x = 0; x < _land.XSize; x++) {
+            for (int z = 0; z < _land.ZSize; z++) {
 
+                if (_land.pathSystem.pathMap[x, z] == 1 && _land.heightMap[x,z] != 0 )  
+                    _land.groundPieces[x, _land.heightMap[x, z], z].Type = GroundPiece.GroundType.Path;
+            }
+        }
     }
-
+       
     static void GenerateRocks(Land _land, float _rockiness = .1f) {
 
         foreach (GroundPiece ground in _land.groundPieces) {

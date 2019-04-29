@@ -1,26 +1,8 @@
 fileFormatVersion: 2
-guid: 301fe8cba7d22a84c865f0e9f9036bfa
+guid: 4da1a2a9a191a314a8920352edd84882
 ModelImporter:
   serializedVersion: 25
-  internalIDToNameTable:
-  - first:
-      1: 100000
-    second: //RootNode
-  - first:
-      4: 400000
-    second: //RootNode
-  - first:
-      21: 2100000
-    second: Grass_Edge_material
-  - first:
-      23: 2300000
-    second: //RootNode
-  - first:
-      33: 3300000
-    second: //RootNode
-  - first:
-      43: 4300000
-    second: Matrix_304
+  internalIDToNameTable: []
   externalObjects: {}
   materials:
     importMaterials: 1

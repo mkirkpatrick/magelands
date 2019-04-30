@@ -74,11 +74,11 @@ public static class LandCreator
                 int landIndex = x + z;
                 _land.areas[landIndex].size[0] += xRand;
                 _land.areas[landIndex].size[1] += zRand;
-                //Debug.Log(landIndex);
+
                 //Shift neighboring position according to size change
                 if (x == hNum - 1) {
                     _land.areas[landIndex].size[0] = _land.XSize - _land.areas[landIndex].position[0];
-                }   
+                }
                 else
                     _land.areas[landIndex + vNum].position[0] += (xRand * -1);
 
@@ -86,11 +86,11 @@ public static class LandCreator
                     _land.areas[landIndex].size[1] = _land.ZSize - _land.areas[landIndex].position[1];
                 else
                     _land.areas[landIndex + 1].position[1] += (zRand * -1);
-
             }
         }
 
         foreach (Area area in _land.areas) {
+            Debug.Log(area.position[0] + "," + area.position[1] + "-" + area.size[0] + "," + area.size[1]);
             _land.heightMap = HeightMapUtil.RaiseSquare(_land.heightMap, area.position, area.size, area.height, true);
 
             /* Rough edges

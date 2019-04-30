@@ -26,7 +26,8 @@ public class Land {
     public int[,] heightMap;
 
     public GroundPiece[,,] groundPieces;
-    public Area[,] areas;
+    public Area[] areas;
+    public int[,] areaMap;
     public PathSystem pathSystem;
 
     public Land(Vector3 _worldPosition, int _xSize, int _zSize) {
@@ -49,7 +50,5 @@ public class Land {
                 }
             }
         }
-
-        //TODO: Paths. Make dynamic. West, North, South, and Crossroads for now.
     }
 }

@@ -12,6 +12,7 @@ public class Area
     public int[] size;
     public int height;
 
+    public int[,] areaMap;
     public int margin;
 
     public Area(int[] _position, int[] _size, int _height) {

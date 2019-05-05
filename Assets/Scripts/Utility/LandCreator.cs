@@ -190,18 +190,44 @@ public static class LandCreator
 
     static void GeneratePaths(Land _land) {
         _land.pathSystem = new PathSystem( _land, new Vector2[3] { new Vector2(0, Random.Range(12, _land.ZSize - 12)), new Vector2(Random.Range(12, _land.XSize - 12), 0), new Vector2( _land.XSize - 1, Random.Range( 12, _land.ZSize - 12)) }, new Vector2(_land.XSize / 2, _land.ZSize / 2));
-        for (int x = 0; x < _land.XSize; x++) {
-            for (int z = 0; z < _land.ZSize; z++) {
+        for (int x = 0; x < _land.XSize; x++)
+        {
+            for (int z = 0; z < _land.ZSize; z++)
+            {
 
-                if (_land.pathSystem.pathMap[x, z] == 1 && _land.heightMap[x, z] != 0) {
+                if (_land.pathSystem.pathMap[x, z] == 1 && _land.heightMap[x, z] != 0)
+                {
                     _land.groundPieces[x, _land.heightMap[x, z], z].Type = GroundPiece.GroundType.Path;
 
                     //Check for slants
-                    int[] heightNeighbors = HeightMapUtil.GetMapNeighbors(_land.heightMap, new int[2] { x, z } );
+                    int[] heightNeighbors = HeightMapUtil.GetMapNeighbors(_land.heightMap, new int[2] { x, z });
+                    int currentHeight = _land.heightMap[x, z];
                     foreach (int i in heightNeighbors)
-                        if (i < _land.heightMap[x, z])
+                        if (i < currentHeight)
                             _land.groundPieces[x, _land.heightMap[x, z], z].attributes.Add("Slant");
-                   
+
+                    if (heightNeighbors[0] < currentHeight)
+                    {
+                        if (heightNeighbors[1] < currentHeight)
+                            _land.groundPieces[x, _land.heightMap[x, z], z].attributes.Add("Facing_NE");
+                        else if (heightNeighbors[3] < currentHeight)
+                            _land.groundPieces[x, _land.heightMap[x, z], z].attributes.Add("Facing_NW");
+                        else
+                            _land.groundPieces[x, _land.heightMap[x, z], z].attributes.Add("Facing_N");
+                    }
+                    else if (heightNeighbors[1] < currentHeight)
+                        _land.groundPieces[x, _land.heightMap[x, z], z].attributes.Add("Facing_E");
+                    else if (heightNeighbors[2] < currentHeight)
+                    {
+                        if (heightNeighbors[1] < currentHeight)
+                            _land.groundPieces[x, _land.heightMap[x, z], z].attributes.Add("Facing_SE");
+                        else if (heightNeighbors[3] < currentHeight)
+                            _land.groundPieces[x, _land.heightMap[x, z], z].attributes.Add("Facing_SW");
+                        else
+                            _land.groundPieces[x, _land.heightMap[x, z], z].attributes.Add("Facing_S");
+                    }
+                    else if (heightNeighbors[3] < currentHeight)
+                        _land.groundPieces[x, _land.heightMap[x, z], z].attributes.Add("Facing_W");
                 }
             }
         }
@@ -215,7 +241,6 @@ public static class LandCreator
 
             if (ground.HasAttributes(new string[1] { "Edge" }) == true && Random.Range(0f, 1f) <= (_rockiness * 5) ) //Sides are rockier than tops
             {
-
                 List<int> openFaces = new List<int>();
 
                 for (int i = 0; i < 4; i++)

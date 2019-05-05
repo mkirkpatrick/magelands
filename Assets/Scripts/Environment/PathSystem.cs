@@ -174,7 +174,6 @@ public class PathSystem
                 if (pathMap[x, z] == 1)
                 {
                     int[] neighbors = HeightMapUtil.GetMapNeighbors(pathMap, new int[2] { x, z });
-
                     int counter = 0;
 
                     foreach (int i in neighbors)
@@ -197,6 +196,11 @@ public class PathSystem
             for (int x = 0; x < _land.XSize; x++) {
                 for (int z = 0; z < _land.ZSize; z++) {
                     if (pathMap[x,z] == 1) {
+                        int[] heightNeighbors = HeightMapUtil.GetMapNeighbors(_land.heightMap, new int[2] { x, z });
+                        int currentHeight = _land.heightMap[x, z];
+
+                        if ( (heightNeighbors[0] < currentHeight && heightNeighbors[2] < currentHeight) || (heightNeighbors[1] < currentHeight && heightNeighbors[3] < currentHeight))
+                            _land.heightMap[x, z] -= 1;
 
                         if ( z != _land.ZSize - 1) {
                             if (_land.heightMap[x, z] - _land.heightMap[x, z + 1] >= 2 && _land.heightMap[x, z + 1] != 0) {

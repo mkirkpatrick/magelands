@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 
 public class Chunk_gameobj : MonoBehaviour
 {
@@ -62,6 +63,8 @@ public class Chunk_gameobj : MonoBehaviour
         int xOffset = chunkData.xPosition * 32;
         int zOffset = chunkData.zPosition * 32;
 
+        GroundPiece.GroundType[] groundTypes = new GroundPiece.GroundType[1] { GroundPiece.GroundType.Empty};
+
         for (int x = 0; x < 32; x++)
         {
             for (int y = 0; y < 16; y++)
@@ -70,54 +73,67 @@ public class Chunk_gameobj : MonoBehaviour
                 {
                     if (chunkData.groundPieces[x, y, z].Type != GroundPiece.GroundType.Empty)
                     {
-                        if (LandUtil.GetGroundPiece(chunkData.landParent, new int[3] {xOffset + x, y + 1, zOffset + z }).Type == GroundPiece.GroundType.Empty)
+                        GroundPiece ground = chunkData.groundPieces[x, y, z];
+                        //GroundPiece[] neighbors = LandUtil.GetNeighborGroundPieces(ground);
+                        bool[] neighbors = ground.neighbors;
+                        /*
+                        if (ground.Type == GroundPiece.GroundType.Path)
                         {
-                            //Block above is air
-                            newVertices.AddRange( MeshUtil.AddMeshFace(chunkData.groundPieces[x, y, z], 4) );
+                            //Block is path
+                            newVertices.AddRange(MeshUtil.AddMeshFace(chunkData.groundPieces[x, y, z], 4));
                             GenerateTris();
-                            newUVs.AddRange( TextureUtil.GetGroundPieceTexture(chunkData.groundPieces[x, y, z], 4) );
+                            newUVs.AddRange(TextureUtil.GetGroundPieceTexture(chunkData.groundPieces[x, y, z], 4));
                         }
+                        else { */
+                            if ( neighbors[4] == false)
+                            {
+                                //Block above is air
+                                newVertices.AddRange(MeshUtil.AddMeshFace(chunkData.groundPieces[x, y, z], 4));
+                                GenerateTris();
+                                newUVs.AddRange(TextureUtil.GetGroundPieceTexture(chunkData.groundPieces[x, y, z], 4));
+                            }
 
-                        if (LandUtil.GetGroundPiece(chunkData.landParent, new int[3] { xOffset + x, y - 1, zOffset + z }).Type == GroundPiece.GroundType.Empty)
-                        {
-                            //Block below is air
-                            newVertices.AddRange(MeshUtil.AddMeshFace(chunkData.groundPieces[x, y, z], 5));
-                            GenerateTris();
-                            newUVs.AddRange( TextureUtil.GetGroundPieceTexture(chunkData.groundPieces[x, y, z], 5) );
-                        }
+                            if (neighbors[5] == false)
+                            {
+                                //Block below is air
+                                newVertices.AddRange(MeshUtil.AddMeshFace(chunkData.groundPieces[x, y, z], 5));
+                                GenerateTris();
+                                newUVs.AddRange(TextureUtil.GetGroundPieceTexture(chunkData.groundPieces[x, y, z], 5));
+                            }
 
-                        if (LandUtil.GetGroundPiece(chunkData.landParent, new int[3] { xOffset + x + 1, y, zOffset + z }).Type == GroundPiece.GroundType.Empty)
-                        {
-                            //Block east is air
-                            newVertices.AddRange(MeshUtil.AddMeshFace(chunkData.groundPieces[x, y, z], 1));
-                            GenerateTris();
-                            newUVs.AddRange( TextureUtil.GetGroundPieceTexture(chunkData.groundPieces[x, y, z], 1) );
-                        }
+                            if ( neighbors[1] == false)
+                            {
+                                //Block east is air
+                                newVertices.AddRange(MeshUtil.AddMeshFace(chunkData.groundPieces[x, y, z], 1));
+                                GenerateTris();
+                                newUVs.AddRange(TextureUtil.GetGroundPieceTexture(chunkData.groundPieces[x, y, z], 1));
+                            }
 
-                        if (LandUtil.GetGroundPiece(chunkData.landParent, new int[3] { xOffset + x - 1, y, zOffset + z }).Type == GroundPiece.GroundType.Empty)
-                        {
-                            //Block west is air
-                            newVertices.AddRange(MeshUtil.AddMeshFace(chunkData.groundPieces[x, y, z], 3));
-                            GenerateTris();
-                            newUVs.AddRange( TextureUtil.GetGroundPieceTexture(chunkData.groundPieces[x, y, z], 3) );
+                            if (neighbors[3] == false)
+                            {
+                                //Block west is air
+                                newVertices.AddRange(MeshUtil.AddMeshFace(chunkData.groundPieces[x, y, z], 3));
+                                GenerateTris();
+                                newUVs.AddRange(TextureUtil.GetGroundPieceTexture(chunkData.groundPieces[x, y, z], 3));
 
-                        }
+                            }
 
-                        if (LandUtil.GetGroundPiece(chunkData.landParent, new int[3] { xOffset + x, y, zOffset + z + 1 }).Type == GroundPiece.GroundType.Empty)
-                        {
-                            //Block north is air
-                            newVertices.AddRange(MeshUtil.AddMeshFace(chunkData.groundPieces[x, y, z], 0));
-                            GenerateTris();
-                            newUVs.AddRange( TextureUtil.GetGroundPieceTexture(chunkData.groundPieces[x, y, z], 0) );
-                        }
+                            if (neighbors[0] == false)
+                            {
+                                //Block north is air
+                                newVertices.AddRange(MeshUtil.AddMeshFace(chunkData.groundPieces[x, y, z], 0));
+                                GenerateTris();
+                                newUVs.AddRange(TextureUtil.GetGroundPieceTexture(chunkData.groundPieces[x, y, z], 0));
+                            }
 
-                        if (LandUtil.GetGroundPiece(chunkData.landParent, new int[3] { xOffset + x, y, zOffset + z - 1 }).Type == GroundPiece.GroundType.Empty)
-                        {
-                            //Block south is air
-                            newVertices.AddRange(MeshUtil.AddMeshFace(chunkData.groundPieces[x, y, z], 2));
-                            GenerateTris();
-                            newUVs.AddRange( TextureUtil.GetGroundPieceTexture(chunkData.groundPieces[x, y, z], 2) );
-                        }
+                            if (neighbors[2] == false )
+                            {
+                                //Block south is air
+                                newVertices.AddRange(MeshUtil.AddMeshFace(chunkData.groundPieces[x, y, z], 2));
+                                GenerateTris();
+                                newUVs.AddRange(TextureUtil.GetGroundPieceTexture(chunkData.groundPieces[x, y, z], 2));
+                            }
+                        //}                       
                     }
                 }
             }
@@ -158,7 +174,7 @@ public class Chunk_gameobj : MonoBehaviour
         List<GroundPiece> groundGrassEdges = new List<GroundPiece>();
 
         foreach (GroundPiece ground in chunkData.groundPieces) {
-            if (ground.Type == GroundPiece.GroundType.Dirt && ground.isEdgePiece == true && ground.neighbors[4] == false)
+            if (ground.Type == GroundPiece.GroundType.Dirt && ground.HasAttributes(new string[1] { "Edge" }) == true && ground.neighbors[4] == false)
                 groundGrassEdges.Add(ground);
         }
 

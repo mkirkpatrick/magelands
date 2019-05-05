@@ -22,7 +22,7 @@ public class GroundPiece {
     public Vector3 position;
 
     public bool[] neighbors;
-    public bool isEdgePiece = false;
+    public List<string> attributes;
 
     public List<GroundDecoration> decorations;
 
@@ -33,9 +33,31 @@ public class GroundPiece {
         neighbors = new bool[6];
 
         decorations = new List<GroundDecoration>();
+        attributes = new List<string>();
     }
 
     public void AddDecoration(GroundDecoration _decoration) {   
         decorations.Add(_decoration);
     }
+
+    public bool HasAttributes(string _attribute)
+    {
+        if (attributes.Contains(_attribute))
+            return true;
+        else
+            return false;
+
+    }
+    public bool HasAttributes(string[] _attributes) {
+        bool hasAttributes = true;
+
+        foreach (string s in _attributes) {
+            if (attributes.Contains(s) == false) {
+                hasAttributes = false;
+                break;
+            }     
+        }
+        return hasAttributes;
+    }
+    
 }

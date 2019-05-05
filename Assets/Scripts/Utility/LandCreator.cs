@@ -40,8 +40,7 @@ public static class LandCreator
         {
             LandUtil.AssignGroundPieceNeighbors(ground);
         }
-
-        
+ 
         GenerateRocks(newLand, .005f);
 
         return newLand;
@@ -63,6 +62,8 @@ public static class LandCreator
                _land.areas[ (h*hNum) + v] = new Area( new int[2] { _horizontalDivisions[h], _verticalDivisions[v] }, new int[2]{ hSize, vSize } , Random.Range(_land.levelHeight - 1, _land.levelHeight + 5 ) );
             }
         }
+        //foreach (Area a in _land.areas)
+            //Debug.Log(a.position[0] + "," + a.position[1] + "-" + a.size[0] + "," + a.size[1]);
 
         //Shift each area size a bit
         for(int x = 0; x < hNum; x++)
@@ -71,7 +72,7 @@ public static class LandCreator
             {
                 int xRand = Random.Range(-4, 5);
                 int zRand = Random.Range(-4, 5);
-                int landIndex = x + z;
+                int landIndex = (x * hNum) + z;
                 _land.areas[landIndex].size[0] += xRand;
                 _land.areas[landIndex].size[1] += zRand;
 
@@ -90,7 +91,6 @@ public static class LandCreator
         }
 
         foreach (Area area in _land.areas) {
-            Debug.Log(area.position[0] + "," + area.position[1] + "-" + area.size[0] + "," + area.size[1]);
             _land.heightMap = HeightMapUtil.RaiseSquare(_land.heightMap, area.position, area.size, area.height, true);
 
             /* Rough edges
@@ -189,12 +189,20 @@ public static class LandCreator
     }
 
     static void GeneratePaths(Land _land) {
-        _land.pathSystem = new PathSystem( _land, new Vector2[3] { new Vector2(0, Random.Range(12, _land.ZSize - 12)), new Vector2(Random.Range(12, _land.XSize), -12), new Vector2( _land.XSize, Random.Range( 12, _land.ZSize - 12)) }, new Vector2(_land.XSize / 2, _land.ZSize / 2));
+        _land.pathSystem = new PathSystem( _land, new Vector2[3] { new Vector2(0, Random.Range(12, _land.ZSize - 12)), new Vector2(Random.Range(12, _land.XSize - 12), 0), new Vector2( _land.XSize - 1, Random.Range( 12, _land.ZSize - 12)) }, new Vector2(_land.XSize / 2, _land.ZSize / 2));
         for (int x = 0; x < _land.XSize; x++) {
             for (int z = 0; z < _land.ZSize; z++) {
 
-                if (_land.pathSystem.pathMap[x, z] == 1 && _land.heightMap[x,z] != 0 )  
+                if (_land.pathSystem.pathMap[x, z] == 1 && _land.heightMap[x, z] != 0) {
                     _land.groundPieces[x, _land.heightMap[x, z], z].Type = GroundPiece.GroundType.Path;
+
+                    //Check for slants
+                    int[] heightNeighbors = HeightMapUtil.GetMapNeighbors(_land.heightMap, new int[2] { x, z } );
+                    foreach (int i in heightNeighbors)
+                        if (i < _land.heightMap[x, z])
+                            _land.groundPieces[x, _land.heightMap[x, z], z].attributes.Add("Slant");
+                   
+                }
             }
         }
     }
@@ -205,7 +213,7 @@ public static class LandCreator
             if (ground.Type == GroundPiece.GroundType.Empty)
                 continue;
 
-            if (ground.isEdgePiece == true && Random.Range(0f, 1f) <= (_rockiness * 5) ) //Sides are rockier than tops
+            if (ground.HasAttributes(new string[1] { "Edge" }) == true && Random.Range(0f, 1f) <= (_rockiness * 5) ) //Sides are rockier than tops
             {
 
                 List<int> openFaces = new List<int>();

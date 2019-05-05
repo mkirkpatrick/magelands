@@ -10,26 +10,89 @@ public static class MeshUtil
 
         Vector3 localPosition = new Vector3(_ground.position.x % 32, _ground.position.y % 16, _ground.position.z % 32);
 
-        switch (_faceNum)
+        if (_ground.Type == GroundPiece.GroundType.Path)
+
         {
-            case 0:
-                newVertices = FaceNorth(localPosition);
-                break;
-            case 1:
-                newVertices = FaceEast(localPosition);
-                break;
-            case 2:
-                newVertices = FaceSouth(localPosition);
-                break;
-            case 3:
-                newVertices = FaceWest(localPosition);
-                break;
-            case 4:
+            GroundPiece[] neighbors = LandUtil.GetNeighborGroundPieces(_ground, false);
+            string slantCode = "";
+            int x = (int)_ground.position.x;
+            int z = (int)_ground.position.z;
+
+            if ( (_ground.Land.heightMap[x, z + 1] < _ground.Land.heightMap[x, z]))
+                slantCode += "1";
+            else
+                slantCode += "0";
+
+            if ( (_ground.Land.heightMap[x + 1, z] < _ground.Land.heightMap[x, z]))
+                slantCode += "1";
+            else
+                slantCode += "0";
+
+            if ( (_ground.Land.heightMap[x, z - 1] < _ground.Land.heightMap[x, z]))
+                slantCode += "1";
+            else
+                slantCode += "0";
+
+            if ( (_ground.Land.heightMap[x - 1, z] < _ground.Land.heightMap[x, z]))
+                        slantCode += "1";
+            else
+                slantCode += "0";
+
+
+            if (slantCode == "1000")
+                newVertices = FaceDiagonal(localPosition, 0);
+            else if (slantCode == "0100")
+                newVertices = FaceDiagonal(localPosition, 1);
+            else if (slantCode == "0010")
+                newVertices = FaceDiagonal(localPosition, 2);
+            else if (slantCode == "0001")
+                newVertices = FaceDiagonal(localPosition, 3);
+            else if (slantCode == "1100")
+                newVertices = FaceDiagonal(localPosition, 4);
+            else if (slantCode == "0110")
+                newVertices = FaceDiagonal(localPosition, 5);
+            else if (slantCode == "0011")
+                newVertices = FaceDiagonal(localPosition, 6);
+            else if (slantCode == "1001")
+                newVertices = FaceDiagonal(localPosition, 7);
+            else
                 newVertices = FaceTop(localPosition);
-                break;
-            case 5:
-                newVertices = FaceBottom(localPosition);
-                break;
+            
+            if (slantCode == "0000") {
+                if ( neighbors[0].HasAttributes("Slant") == true && neighbors[1].HasAttributes("Slant") == true )
+                    newVertices = FaceDiagonal(localPosition, 8);
+                if (neighbors[1].HasAttributes("Slant") == true && neighbors[2].HasAttributes("Slant") == true )
+                    newVertices = FaceDiagonal(localPosition, 9);
+                if (neighbors[2].HasAttributes("Slant") == true && neighbors[3].HasAttributes("Slant") == true )
+                    newVertices = FaceDiagonal(localPosition, 10);
+                if (neighbors[3].HasAttributes("Slant") == true && neighbors[0].HasAttributes("Slant") == true )
+                    newVertices = FaceDiagonal(localPosition, 11);
+            }
+            
+
+        }
+        else {
+            switch (_faceNum)
+            {
+                case 0:
+                    newVertices = FaceNorth(localPosition);
+                    break;
+                case 1:
+                    newVertices = FaceEast(localPosition);
+                    break;
+                case 2:
+                    newVertices = FaceSouth(localPosition);
+                    break;
+                case 3:
+                    newVertices = FaceWest(localPosition);
+                    break;
+                case 4:
+                    newVertices = FaceTop(localPosition);
+                    break;
+                case 5:
+                    newVertices = FaceBottom(localPosition);
+                    break;
+            }
         }
 
         return newVertices;
@@ -90,13 +153,13 @@ public static class MeshUtil
             Vector3 pos = _position;
             float offsetUnit = 0;
 
-            if (_ground.Type == GroundPiece.GroundType.Path)
+            if (_ground.Type == GroundPiece.GroundType.Dirt)
                 offsetUnit = .0625f;
 
-            newVectors[0] = new Vector3(pos.x, pos.y - offsetUnit, pos.z);
-            newVectors[1] = new Vector3(pos.x, pos.y - offsetUnit, pos.z + 1);
-            newVectors[2] = new Vector3(pos.x + 1, pos.y - offsetUnit, pos.z + 1);
-            newVectors[3] = new Vector3(pos.x + 1, pos.y - offsetUnit, pos.z);
+            newVectors[0] = new Vector3(pos.x, pos.y + offsetUnit, pos.z);
+            newVectors[1] = new Vector3(pos.x, pos.y + offsetUnit, pos.z + 1);
+            newVectors[2] = new Vector3(pos.x + 1, pos.y + offsetUnit, pos.z + 1);
+            newVectors[3] = new Vector3(pos.x + 1, pos.y + offsetUnit, pos.z);
 
             return newVectors;
         }
@@ -112,6 +175,55 @@ public static class MeshUtil
 
             return newVectors;
         }
+        Vector3[] FaceDiagonal(Vector3 _position, int _direction) {
+            
+            Vector3[] newVectors = new Vector3[4];
+            Vector3 pos = _position;
+
+            int[] yOffset = new int[4];
+
+            if (_direction == 0 || _direction == 4) {
+                yOffset[1] = -1;
+                yOffset[2] = -1;
+            }
+            else if (_direction == 1 || _direction == 5) {
+                yOffset[2] = -1;
+                yOffset[3] = -1;
+            }
+            else if (_direction == 2 || _direction == 6) {
+                yOffset[3] = -1;
+                yOffset[0] = -1;
+            }
+            else if (_direction == 3 || _direction == 7) {
+                yOffset[0] = -1;
+                yOffset[1] = -1;
+            }
+            
+            if (_direction == 4)
+                yOffset[3] = -1;
+            else if (_direction == 5)
+                yOffset[0] = -1;
+            else if (_direction == 6)
+                yOffset[1] = -1;
+            else if (_direction == 7)
+                yOffset[2] = -1;
+
+            if (_direction == 8)
+                yOffset[2] = -1;
+            else if (_direction == 9)
+                yOffset[3] = -1;
+            else if (_direction == 10)
+                yOffset[0] = -1;
+            else if (_direction == 11)
+                yOffset[1] = -1;
+                
+            newVectors[0] = new Vector3(pos.x, pos.y + yOffset[0], pos.z);
+            newVectors[1] = new Vector3(pos.x, pos.y + yOffset[1], pos.z + 1);
+            newVectors[2] = new Vector3(pos.x + 1, pos.y + yOffset[2], pos.z + 1);
+            newVectors[3] = new Vector3(pos.x + 1, pos.y + yOffset[3], pos.z);
+
+            return newVectors;
+        }
     }
 
     public static GameObject[] GenerateGrassEdges(GroundPiece[] _groundPieces, GameObject _chunkParent) {
@@ -123,9 +235,11 @@ public static class MeshUtil
         Mesh grassEdge = GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Edge").GetComponent<MeshFilter>().sharedMesh;
         Mesh grassCorner = GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Corner").GetComponent<MeshFilter>().sharedMesh;
 
+        float offsetUnit = .0625f;
+
         foreach (GroundPiece ground in _groundPieces) {
 
-            Vector3 localPosition = new Vector3((ground.position.x % 32) + .5f, ground.position.y % 16, (ground.position.z % 32) + .5f);
+            Vector3 localPosition = new Vector3((ground.position.x % 32) + .5f, (ground.position.y % 16) + offsetUnit, (ground.position.z % 32) + .5f);
             
             if (ground.neighbors[0] == false) {
                 if (ground.neighbors[1] == false)
@@ -196,10 +310,12 @@ public static class MeshUtil
         Mesh pathCorner = GameController.instance.database.groundDatabase.GetGroundPiece_GO("Path_Corner").GetComponent<MeshFilter>().sharedMesh;
         Mesh pathInnerCorner = GameController.instance.database.groundDatabase.GetGroundPiece_GO("Grass_Corner").GetComponent<MeshFilter>().sharedMesh;
 
+        float offsetUnit = .0625f;
+
         foreach (GroundPiece ground in _groundPieces)
         {
 
-            Vector3 localPosition = new Vector3((ground.position.x % 32) + .5f, ground.position.y % 16, (ground.position.z % 32) + .5f);
+            Vector3 localPosition = new Vector3((ground.position.x % 32) + .5f, (ground.position.y % 16) + offsetUnit, (ground.position.z % 32) + .5f);
             int x = (int)ground.position.x;
             int y = (int)ground.position.z;
 
@@ -245,7 +361,7 @@ public static class MeshUtil
             else if (edgeCode == "1110" || edgeCode == "1101" || edgeCode == "1011" || edgeCode == "0111") {
                 Debug.Log(ground.position);
                 ground.Type = GroundPiece.GroundType.Dirt;
-                _chunkParent.GetComponent<Chunk_gameobj>().UpdateBlockMesh();
+                //_chunkParent.GetComponent<Chunk_gameobj>().UpdateBlockMesh();
             }
                 
 
@@ -256,6 +372,7 @@ public static class MeshUtil
         newMeshes.Add(CreateCombinedMesh(edgeCombines.ToArray(), _chunkParent.transform, "Path_Edge"));
         return newMeshes.ToArray();
     }
+
     public static CombineInstance AddCombineInstance(Mesh _newMesh, Vector3 _position, float _rotation) {
 
         CombineInstance newCombine = new CombineInstance();

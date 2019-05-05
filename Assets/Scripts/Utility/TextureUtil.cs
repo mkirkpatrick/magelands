@@ -10,12 +10,34 @@ public static class TextureUtil
         Vector2 texturePos = GetTexturePosition(_ground, _faceNum);
         float tUnit = 1f / 8f;
 
-        uvVectors[0] = new Vector2(tUnit * texturePos.x, tUnit * texturePos.y);
-        uvVectors[1] = new Vector2(tUnit * texturePos.x, tUnit * texturePos.y + tUnit);
-        uvVectors[2] = new Vector2(tUnit * texturePos.x + tUnit, tUnit * texturePos.y + tUnit);
-        uvVectors[3] = new Vector2(tUnit * texturePos.x + tUnit, tUnit * texturePos.y);
+        if (_ground.HasAttributes("Slant") == true)
+        {
+            int x, y;
+            x = (int)_ground.position.x;
+            y = (int)_ground.position.y;
 
-        uvVectors = AlignTexture(uvVectors, _ground, _faceNum);
+            int[] heightNeighbors = HeightMapUtil.GetMapNeighbors(_ground.Land.heightMap, new int[2] { x, y });
+            float xVal = tUnit;
+            float yVal = tUnit;
+
+            if (heightNeighbors[0] < _ground.Land.heightMap[x, y] || heightNeighbors[2] < _ground.Land.heightMap[x, y])
+                yVal = 23f / 128f;
+            else
+                xVal = 23f / 128f;
+
+            uvVectors[0] = new Vector2(tUnit * texturePos.x, tUnit * texturePos.y);
+            uvVectors[1] = new Vector2(tUnit * texturePos.x, tUnit * texturePos.y + yVal);
+            uvVectors[2] = new Vector2(tUnit * texturePos.x + xVal, tUnit * texturePos.y + yVal);
+            uvVectors[3] = new Vector2(tUnit * texturePos.x + xVal, tUnit * texturePos.y);
+        }
+        else {
+            uvVectors[0] = new Vector2(tUnit * texturePos.x, tUnit * texturePos.y);
+            uvVectors[1] = new Vector2(tUnit * texturePos.x, tUnit * texturePos.y + tUnit);
+            uvVectors[2] = new Vector2(tUnit * texturePos.x + tUnit, tUnit * texturePos.y + tUnit);
+            uvVectors[3] = new Vector2(tUnit * texturePos.x + tUnit, tUnit * texturePos.y);
+            uvVectors = AlignTexture(uvVectors, _ground, _faceNum);
+        }
+
         //uvVectors = RotateTexture( uvVectors, _ground, _faceNum);
 
         return uvVectors;
@@ -24,6 +46,8 @@ public static class TextureUtil
     static Vector2 GetTexturePosition(GroundPiece _ground, int _face) {
         Vector2 texturePosition = new Vector2();
 
+        GroundPiece[] neighbors = LandUtil.GetNeighborGroundPieces(_ground);
+
         switch (_ground.Type)
         {
             case GroundPiece.GroundType.Dirt:
@@ -31,7 +55,7 @@ public static class TextureUtil
                 if (_face == 4)
                     texturePosition = new Vector2(1, 0);
                 else if (_face == 0) {
-                    if (_ground.neighbors[1] == false || _ground.neighbors[3] == false)
+                    if (_ground.neighbors[1] == false || _ground.neighbors[3] == false )
                     {
                         if (_ground.neighbors[5] == true)
                             texturePosition = new Vector2(0, 3);
@@ -43,7 +67,7 @@ public static class TextureUtil
                 }
                 else if (_face == 1)
                 {
-                    if (_ground.neighbors[0] == false || _ground.neighbors[2] == false)
+                    if (_ground.neighbors[0] == false || _ground.neighbors[2] == false )
                     {
                         if (_ground.neighbors[5] == true)
                             texturePosition = new Vector2(0, 4);
@@ -55,7 +79,7 @@ public static class TextureUtil
                 }
                 else if (_face == 2)
                 {
-                    if (_ground.neighbors[1] == false || _ground.neighbors[3] == false)
+                    if (_ground.neighbors[1] == false || _ground.neighbors[3] == false )
                     {
                         if (_ground.neighbors[5] == true)
                             texturePosition = new Vector2(0, 3);
@@ -67,7 +91,7 @@ public static class TextureUtil
                 }
                 else if (_face == 3)
                 {
-                    if (_ground.neighbors[0] == false || _ground.neighbors[2] == false)
+                    if (_ground.neighbors[0] == false || _ground.neighbors[2] == false )
                     {
                         if (_ground.neighbors[5] == true)
                             texturePosition = new Vector2(0, 4);
@@ -81,7 +105,11 @@ public static class TextureUtil
                 break;
 
             case GroundPiece.GroundType.Path:
-                texturePosition = new Vector2(0, 0);
+
+                if (_ground.HasAttributes("Slant") == true)
+                    texturePosition = new Vector2(2,0);
+                else
+                    texturePosition = new Vector2(0, 0);
                 break;
         }
         return texturePosition;

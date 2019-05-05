@@ -49,13 +49,13 @@ public static class LandUtil
         int y = (int)_groundPiece.position.y;
         int z = (int)_groundPiece.position.z;
 
-        if (GetGroundPiece(_groundPiece.Land, new int[3] { x, y, z + 1 }).Type != GroundPiece.GroundType.Empty)
+        if (GetGroundPiece(_groundPiece.Land, new int[3] { x, y, z + 1 }).Type != GroundPiece.GroundType.Empty && GetGroundPiece(_groundPiece.Land, new int[3] { x, y, z + 1 }).HasAttributes("Slant") != true )
             _groundPiece.neighbors[0] = true;
-        if (GetGroundPiece(_groundPiece.Land, new int[3] { x + 1, y, z }).Type != GroundPiece.GroundType.Empty)
+        if (GetGroundPiece(_groundPiece.Land, new int[3] { x + 1, y, z }).Type != GroundPiece.GroundType.Empty && GetGroundPiece(_groundPiece.Land, new int[3] { x + 1, y, z }).HasAttributes("Slant") != true )
             _groundPiece.neighbors[1] = true;
-        if (GetGroundPiece(_groundPiece.Land, new int[3] { x, y, z - 1 }).Type != GroundPiece.GroundType.Empty)
+        if (GetGroundPiece(_groundPiece.Land, new int[3] { x, y, z - 1 }).Type != GroundPiece.GroundType.Empty && GetGroundPiece(_groundPiece.Land, new int[3] { x, y, z - 1 }).HasAttributes("Slant") != true )
             _groundPiece.neighbors[2] = true;
-        if (GetGroundPiece(_groundPiece.Land, new int[3] { x - 1, y, z }).Type != GroundPiece.GroundType.Empty)
+        if (GetGroundPiece(_groundPiece.Land, new int[3] { x - 1, y, z }).Type != GroundPiece.GroundType.Empty && GetGroundPiece(_groundPiece.Land, new int[3] { x - 1, y, z }).HasAttributes("Slant") != true )
             _groundPiece.neighbors[3] = true;
         if (GetGroundPiece(_groundPiece.Land, new int[3] { x, y + 1, z }).Type != GroundPiece.GroundType.Empty)
             _groundPiece.neighbors[4] = true;
@@ -67,7 +67,7 @@ public static class LandUtil
             {
                 if (_groundPiece.neighbors[i] == false)
                 {
-                    _groundPiece.isEdgePiece = true;
+                    _groundPiece.attributes.Add("Edge");
                     break;
                 }
             }

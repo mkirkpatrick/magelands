@@ -23,27 +23,171 @@ public class PathSystem
     }
 
     void GeneratePathMap() {
+
+        //Update Crossraods
+        UpdatePathMap(new int[2] { (int)crossroads[0].x, (int)crossroads[0].y });
+        
         foreach (Path path in paths) {
-            for (float f = 0; f <= 1; f += .005f) {
-                Vector2 bezierVector = MathUtil.CalculateCubicBezierPoint(f, path.pathPoints[0], path.bezierHandles[0], path.bezierHandles[1], path.pathPoints[1]);
-                int[] mapPositions = new int[2] { Mathf.Clamp( Mathf.RoundToInt(bezierVector.x), 0, pathMap.GetLength(0) - 1), Mathf.Clamp(Mathf.RoundToInt(bezierVector.y), 0, pathMap.GetLength(1) - 1 ) };
 
-                pathMap[ mapPositions[0], mapPositions[1] ] = 1;
-                int[] neighbors = HeightMapUtil.GetMapNeighbors(pathMap, new int[2] { mapPositions[0], mapPositions[1] });
+            int xDiff = (int)path.pathPoints[1].x - (int)path.pathPoints[0].x;
+            int yDiff = (int)path.pathPoints[1].y - (int)path.pathPoints[0].y;
 
-                if(mapPositions[0] != 0)
-                    pathMap[ mapPositions[0] - 1, mapPositions[1] ] = 1;
-                if (mapPositions[0] != pathMap.GetLength(0) - 1)
-                    pathMap [mapPositions[0] + 1, mapPositions[1] ] = 1;
-                if (mapPositions[1] != 0)
-                    pathMap[ mapPositions[0], mapPositions[1] - 1 ] = 1;
-                if (mapPositions[1] != pathMap.GetLength(1) - 1)
-                    pathMap[mapPositions[0], mapPositions[1] + 1] = 1;
+            List<int> xRuns = new List<int>();
+            List<int> yRuns = new List<int>();
+
+            int xAbs = Mathf.Abs(xDiff);
+            int yAbs = Mathf.Abs(yDiff);
+
+            while (xAbs != 0) {
+                if (xAbs > 12)
+                {
+                    int newRun = Random.Range(4, 9);
+                    xRuns.Add(newRun);
+                    xAbs -= newRun;
+                }
+                else {
+                    if (xAbs <= 8)
+                    {
+                        xRuns.Add(xAbs);
+                        xAbs -= xAbs;
+                    }
+                    else {
+                        xRuns.Add( Mathf.FloorToInt(xAbs / 2) );
+
+                        if(xAbs % 2 != 0)
+                            xRuns.Add(Mathf.FloorToInt(xAbs / 2) + 1);
+                        else
+                            xRuns.Add(Mathf.FloorToInt(xAbs / 2));
+
+                        xAbs -= xAbs;
+                    }
+                }   
             }
-        }     
+
+            int yVal = Mathf.FloorToInt(yAbs / xRuns.Count);
+            int yRemainder = yAbs % xRuns.Count;
+
+            for (int i = 0; i < xRuns.Count; i++) {
+                yRuns.Add(yVal);
+            }
+            for (int i = 0; i < xRuns.Count; i++)
+            {
+                int randomOffset = Random.Range(-2, 3);
+
+                if (i == xRuns.Count - 1)
+                {
+                    yRuns[i] += randomOffset;
+                    yRuns[0] += -randomOffset;
+                }
+                else {
+                    yRuns[i] += randomOffset;
+                    yRuns[i + 1] += -randomOffset;
+                }
+            }
+            //Add remainder to smallest run
+            int lowestVal = 1000;
+            int lowestIndex = 0;
+
+            for (int i = 0; i < xRuns.Count; i++) {
+                if (yRuns[i] < lowestVal) {
+                    lowestIndex = i;
+                    lowestVal = yRuns[i];
+                }       
+            }
+            yRuns[lowestIndex] += yRemainder;
+
+            int[] currentPosition = new int[2] { (int)path.pathPoints[0].x, (int)path.pathPoints[0].y };
+
+            for (int i = 0; i < xRuns.Count; i++)
+            {
+                for (int x = 0; x < xRuns[i]; x++) {
+                    UpdatePathMap(currentPosition);
+
+                    if(xDiff >= 0)
+                        currentPosition[0]++;
+                    else
+                        currentPosition[0]--;
+
+                }
+                for (int y = 0; y < yRuns[i]; y++)
+                {
+                    UpdatePathMap(currentPosition);
+
+                    if (yDiff >= 0)
+                        currentPosition[1]++;
+                    else
+                        currentPosition[1]--;
+                }
+            }
+
+           
+        }
+        void UpdatePathMap(int[] _mapPositions)
+        {
+
+            pathMap[_mapPositions[0], _mapPositions[1]] = 1;
+
+            if (_mapPositions[0] != 0) {
+                pathMap[_mapPositions[0] - 1, _mapPositions[1]] = 1;
+                if (_mapPositions[1] != 0)
+                    pathMap[_mapPositions[0] - 1, _mapPositions[1] - 1] = 1;
+                if (_mapPositions[1] != pathMap.GetLength(1) - 1)
+                    pathMap[_mapPositions[0] - 1, _mapPositions[1] + 1] = 1;
+            }
+
+            if (_mapPositions[0] != pathMap.GetLength(0) - 1) {
+                pathMap[_mapPositions[0] + 1, _mapPositions[1]] = 1;
+                if (_mapPositions[1] != 0)
+                    pathMap[_mapPositions[0] + 1, _mapPositions[1] - 1] = 1;
+                if (_mapPositions[1] != pathMap.GetLength(1) - 1)
+                    pathMap[_mapPositions[0] + 1, _mapPositions[1] + 1] = 1;
+            }
+
+            if (_mapPositions[1] != 0) {
+                pathMap[_mapPositions[0], _mapPositions[1] - 1] = 1;
+
+                if (_mapPositions[0] != 0)
+                    pathMap[_mapPositions[0] - 1, _mapPositions[1] - 1] = 1;
+                if (_mapPositions[0] != pathMap.GetLength(1) - 1)
+                    pathMap[_mapPositions[0] + 1, _mapPositions[1] - 1] = 1;
+            }
+
+            if (_mapPositions[1] != pathMap.GetLength(1) - 1) {
+                pathMap[_mapPositions[0], _mapPositions[1] + 1] = 1;
+                if (_mapPositions[0] != 0)
+                    pathMap[_mapPositions[0] - 1, _mapPositions[1] + 1] = 1;
+                if (_mapPositions[0] != pathMap.GetLength(1) - 1)
+                    pathMap[_mapPositions[0] + 1, _mapPositions[1] + 1] = 1;
+            }
+                
+
+        }
     }
 
     void SmoothPaths(Land _land) {
+
+        //Remove Path Juts
+        for (int x = 0; x < pathMap.GetLength(0); x++)
+        {
+            for (int z = 0; z < pathMap.GetLength(1); z++)
+            {
+                if (pathMap[x, z] == 1)
+                {
+                    int[] neighbors = HeightMapUtil.GetMapNeighbors(pathMap, new int[2] { x, z });
+
+                    int counter = 0;
+
+                    foreach (int i in neighbors)
+                        if (i == 1)
+                            counter++;
+
+                    if (counter <= 1)
+                    {
+                        pathMap[x, z] = 0;
+                    }
+                }
+            }
+        }
 
         bool smoothed = true;
 
@@ -54,13 +198,13 @@ public class PathSystem
                 for (int z = 0; z < _land.ZSize; z++) {
                     if (pathMap[x,z] == 1) {
 
-                        if ( z != _land.ZSize - 1 && pathMap[x, z + 1] == 1) {
+                        if ( z != _land.ZSize - 1) {
                             if (_land.heightMap[x, z] - _land.heightMap[x, z + 1] >= 2 && _land.heightMap[x, z + 1] != 0) {
                                 _land.heightMap[x, z] -= 1;
                                 smoothed = true;
                             }   
                         }
-                        if ( x != _land.XSize - 1 && pathMap[x + 1, z] == 1)
+                        if ( x != _land.XSize - 1)
                         {
                             if (_land.heightMap[x, z] - _land.heightMap[x + 1, z] >= 2 && _land.heightMap[x + 1, z] != 0)
                             {
@@ -68,7 +212,7 @@ public class PathSystem
                                 smoothed = true;
                             }
                         }
-                        if ( z != 0 && pathMap[x, z - 1] == 1)
+                        if ( z != 0)
                         {
                             if (_land.heightMap[x, z] - _land.heightMap[x, z - 1] >= 2 && _land.heightMap[x, z - 1] != 0) {
                                 _land.heightMap[x, z] -= 1;
@@ -76,7 +220,7 @@ public class PathSystem
                             }
                                 
                         }
-                        if ( x != 0 && pathMap[x - 1, z] == 1)
+                        if ( x != 0)
                         {
                             if (_land.heightMap[x, z] - _land.heightMap[x - 1, z] >= 2 && _land.heightMap[x - 1, z] != 0) {
                                 _land.heightMap[x, z] -= 1;
@@ -87,6 +231,8 @@ public class PathSystem
                 }
             }              
         }
+
+
     }
 
     [System.Serializable]

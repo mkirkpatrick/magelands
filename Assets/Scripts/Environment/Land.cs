@@ -46,7 +46,7 @@ public class Land {
             {
                 for (int y = 0; y < 16; y++)
                 {
-                    groundPieces[x, y, z] = new GroundPiece(this, new Vector3(x, y, z), GroundPiece.GroundType.Empty);
+                    groundPieces[x, y, z] = new GroundPiece(this, new Vector3(x, y, z), 0);
                 }
             }
         }

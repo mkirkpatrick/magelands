@@ -10,7 +10,7 @@ public static class MeshUtil
 
         Vector3 localPosition = new Vector3(_ground.position.x % 32, _ground.position.y % 16, _ground.position.z % 32);
 
-        if (_ground.Type == GroundPiece.GroundType.Path)
+        if (_ground.id == 2)
 
         {
             GroundPiece[] neighbors = LandUtil.GetNeighborGroundPieces(_ground, false);
@@ -153,7 +153,7 @@ public static class MeshUtil
             Vector3 pos = _position;
             float offsetUnit = 0;
 
-            if (_ground.Type == GroundPiece.GroundType.Dirt)
+            if (_ground.id != 2)
                 offsetUnit = .0625f;
 
             newVectors[0] = new Vector3(pos.x, pos.y + offsetUnit, pos.z);
@@ -359,8 +359,8 @@ public static class MeshUtil
             else if (edgeCode == "1001")
                 cornerCombines.Add(AddCombineInstance(pathCorner, localPosition, 270));
             else if (edgeCode == "1110" || edgeCode == "1101" || edgeCode == "1011" || edgeCode == "0111") {
-                Debug.Log(ground.position);
-                ground.Type = GroundPiece.GroundType.Dirt;
+                Debug.Log("Path Jut: " + ground.position);
+                ground.id = 1;
                 //_chunkParent.GetComponent<Chunk_gameobj>().UpdateBlockMesh();
             }
                 

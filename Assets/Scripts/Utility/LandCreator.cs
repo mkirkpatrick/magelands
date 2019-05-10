@@ -14,38 +14,24 @@ public static class LandCreator
         newLand.heightMap = HeightMapUtil.RoundMapCorners(newLand.heightMap, 8, 6);
         newLand.heightMap = HeightMapUtil.RoughMapEdges(newLand.heightMap, 6, .04f, true);
 
-        //Land detailing
+        //Create basic land areas and rectangles
         GenerateAreas(newLand, new int[] { 0, 30, 58, newLand.XSize }, new int[] { 0, 30, 72, newLand.ZSize });
         
-        newLand.heightMap = HeightMapUtil.SmoothMap(newLand.heightMap);
-
+        //Create pathmap
         GeneratePaths(newLand);
+
+        //Second pass for areas now including path data
         GenerateAdvancedAreas(newLand);
 
-        // Generate ground from heightmap
-        for (int x = 0; x < newLand.XSize; x++) {
-            for (int z = 0; z < newLand.ZSize; z++) {
-                int height = newLand.heightMap[x, z];
-
-                if (height <= 0)
-                    continue;
-
-                for (int h = 0; h <= height; h++) {
-                    if(newLand.groundPieces[x, h, z].Type == GroundPiece.GroundType.Empty)
-                    newLand.groundPieces[x, h, z].Type = GroundPiece.GroundType.Dirt;
-                }
-            }
-        }
-        foreach (GroundPiece ground in newLand.groundPieces)
-        {
-            LandUtil.AssignGroundPieceNeighbors(ground);
-        }
- 
+        AssignGroundIDs(newLand);
+        
+        GenerateMountains(newLand);
         GenerateRocks(newLand, .005f);
 
         return newLand;
     }
 
+    //Large scale manipulation
     static void GenerateAreas(Land _land, int[] _horizontalDivisions, int[] _verticalDivisions) {
 
         int hNum = _horizontalDivisions.Length - 1;
@@ -59,11 +45,9 @@ public static class LandCreator
                 int hSize = _horizontalDivisions[h + 1] - _horizontalDivisions[h];
                 int vSize = _verticalDivisions[v + 1] - _verticalDivisions[v];
 
-               _land.areas[ (h*hNum) + v] = new Area( new int[2] { _horizontalDivisions[h], _verticalDivisions[v] }, new int[2]{ hSize, vSize } , Random.Range(_land.levelHeight - 1, _land.levelHeight + 5 ) );
+               _land.areas[ (h*hNum) + v] = new Area(new int[2] { _horizontalDivisions[h], _verticalDivisions[v] }, new int[2]{ hSize, vSize } , Random.Range(_land.levelHeight - 1, _land.levelHeight + 5 ) );
             }
         }
-        //foreach (Area a in _land.areas)
-            //Debug.Log(a.position[0] + "," + a.position[1] + "-" + a.size[0] + "," + a.size[1]);
 
         //Shift each area size a bit
         for(int x = 0; x < hNum; x++)
@@ -99,6 +83,8 @@ public static class LandCreator
             _land.heightMap = HeightMapUtil.InsertMapIntoMap(_land.heightMap, areaMap, area.position);
             */
         }
+
+        _land.heightMap = HeightMapUtil.SmoothMap(_land.heightMap);
     }
     static void GenerateAdvancedAreas(Land _land) {
 
@@ -129,6 +115,7 @@ public static class LandCreator
             if (i > areaNum)
                 areaNum = i;
 
+        //Calculate properties and create new area
         for (int i = 0; i < areaNum; i++) {
             int[] postion = new int[2] { _land.XSize, _land.ZSize };
             int[] size = new int[2];
@@ -156,6 +143,7 @@ public static class LandCreator
             }
             newAreas.Add( new Area(postion, size, height) );
 
+            //Modify newly created Area
             int[,] newMap = HeightMapUtil.ExtractMapArea(areaMap, postion, size);
             for (int x = 0; x < newMap.GetLength(0); x++) {
                 for (int z = 0; z < newMap.GetLength(1); z++) {
@@ -166,10 +154,10 @@ public static class LandCreator
                 }
             }
             newAreas[i].areaMap = newMap;
-
+            newAreas[i].SetAreaBorder();
         }
 
-        _land.areas = newAreas.ToArray();
+        _land.areas = newAreas.ToArray(); 
 
         void AddAreaNeighbors(GroundPiece _ground, int _currentArea, int _currentHeight) {
             int x = (int)_ground.position.x;
@@ -185,9 +173,7 @@ public static class LandCreator
                 AddAreaNeighbors(neighbor, _currentArea, _currentHeight);
             
         }
-
     }
-
     static void GeneratePaths(Land _land) {
         _land.pathSystem = new PathSystem( _land, new Vector2[3] { new Vector2(0, Random.Range(12, _land.ZSize - 12)), new Vector2(Random.Range(12, _land.XSize - 12), 0), new Vector2( _land.XSize - 1, Random.Range( 12, _land.ZSize - 12)) }, new Vector2(_land.XSize / 2, _land.ZSize / 2));
         for (int x = 0; x < _land.XSize; x++)
@@ -197,7 +183,7 @@ public static class LandCreator
 
                 if (_land.pathSystem.pathMap[x, z] == 1 && _land.heightMap[x, z] != 0)
                 {
-                    _land.groundPieces[x, _land.heightMap[x, z], z].Type = GroundPiece.GroundType.Path;
+                    _land.groundPieces[x, _land.heightMap[x, z], z].id = 2;
 
                     //Check for slants
                     int[] heightNeighbors = HeightMapUtil.GetMapNeighbors(_land.heightMap, new int[2] { x, z });
@@ -232,11 +218,29 @@ public static class LandCreator
             }
         }
     }
-       
+
+    static void GenerateMountains(Land _land) {
+        foreach (GroundPiece ground in _land.groundPieces)
+        {
+            if (ground.id == 1)
+            {
+                int groundHeight = _land.heightMap[(int)ground.position.x, (int)ground.position.z];
+                int[] neighborHeights = HeightMapUtil.GetMapNeighbors(_land.heightMap, new int[2] { (int)ground.position.x, (int)ground.position.z });
+
+                for (int i = 0; i < 4; i++)
+                {
+                    if ((groundHeight - neighborHeights[i]) >= 2)
+                    {
+                        ground.id = 3;
+                    }
+                }
+            }
+        }
+    }
     static void GenerateRocks(Land _land, float _rockiness = .1f) {
 
         foreach (GroundPiece ground in _land.groundPieces) {
-            if (ground.Type == GroundPiece.GroundType.Empty)
+            if (ground.id == 0)
                 continue;
 
             if (ground.HasAttributes(new string[1] { "Edge" }) == true && Random.Range(0f, 1f) <= (_rockiness * 5) ) //Sides are rockier than tops
@@ -280,5 +284,29 @@ public static class LandCreator
             }
         }
 
+    }
+
+    static void AssignGroundIDs(Land _land) {
+        // Generate ground from heightmap
+        for (int x = 0; x < _land.XSize; x++)
+        {
+            for (int z = 0; z < _land.ZSize; z++)
+            {
+                int height = _land.heightMap[x, z];
+
+                if (height <= 0)
+                    continue;
+
+                for (int h = 0; h <= height; h++)
+                {
+                    if (_land.groundPieces[x, h, z].id == 0)
+                        _land.groundPieces[x, h, z].id = 1;
+                }
+            }
+        }
+        foreach (GroundPiece ground in _land.groundPieces)
+        {
+            LandUtil.AssignGroundPieceNeighbors(ground);
+        }
     }
 }

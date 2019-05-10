@@ -17,18 +17,13 @@ public static class TextureUtil
             y = (int)_ground.position.y;
 
             int[] heightNeighbors = HeightMapUtil.GetMapNeighbors(_ground.Land.heightMap, new int[2] { x, y });
-            float xVal = tUnit;
-            float yVal = tUnit;
+            float yVal = 23f / 128f;
 
-            if (heightNeighbors[0] < _ground.Land.heightMap[x, y] || heightNeighbors[2] < _ground.Land.heightMap[x, y])
-                yVal = 23f / 128f;
-            else
-                xVal = 23f / 128f;
-
-            uvVectors[0] = new Vector2(tUnit * texturePos.x, tUnit * texturePos.y);
-            uvVectors[1] = new Vector2(tUnit * texturePos.x, tUnit * texturePos.y + yVal);
-            uvVectors[2] = new Vector2(tUnit * texturePos.x + xVal, tUnit * texturePos.y + yVal);
-            uvVectors[3] = new Vector2(tUnit * texturePos.x + xVal, tUnit * texturePos.y);
+            uvVectors[0] = new Vector2(tUnit * texturePos.x, yVal * texturePos.y);
+            uvVectors[1] = new Vector2(tUnit * texturePos.x, yVal * texturePos.y + yVal);
+            uvVectors[2] = new Vector2(tUnit * texturePos.x + tUnit, yVal * texturePos.y + yVal);
+            uvVectors[3] = new Vector2(tUnit * texturePos.x + tUnit, yVal * texturePos.y);
+            uvVectors = AlignTexture(uvVectors, _ground, _faceNum);
         }
         else {
             uvVectors[0] = new Vector2(tUnit * texturePos.x, tUnit * texturePos.y);
@@ -48,9 +43,9 @@ public static class TextureUtil
 
         GroundPiece[] neighbors = LandUtil.GetNeighborGroundPieces(_ground);
 
-        switch (_ground.Type)
+        switch (_ground.id)
         {
-            case GroundPiece.GroundType.Dirt:
+            case 1:
 
                 if (_face == 4)
                     texturePosition = new Vector2(1, 0);
@@ -104,13 +99,30 @@ public static class TextureUtil
 
                 break;
 
-            case GroundPiece.GroundType.Path:
+            case 2:
 
-                if (_ground.HasAttributes("Slant") == true)
-                    texturePosition = new Vector2(2,0);
+                if (_ground.HasAttributes("Slant") == true) {
+                    int counter = 0;
+                    for(int i = 0; i < 4; i++)
+                        if (neighbors[i].id != 0 && neighbors[i].HasAttributes("Slant") == false)
+                            counter++;
+
+                    if(counter == 2)
+                        texturePosition = new Vector2(2, 1);
+                    else
+                        texturePosition = new Vector2(2, 0);
+                }   
                 else
                     texturePosition = new Vector2(0, 0);
                 break;
+
+            case 3:
+                if (_face == 4)
+                    texturePosition = new Vector2(1, 0);
+                else
+                    texturePosition = new Vector2(1, 1);
+                break;
+
         }
         return texturePosition;
     }
@@ -118,26 +130,56 @@ public static class TextureUtil
         Vector2[] newVectors = _vectors;
         bool[] neighbors = _ground.neighbors;
 
-        switch (_face) {
-            case 0:
-                if (neighbors[3] == false)
-                    newVectors = FlipTexture(newVectors, 1);
-                break;
-            case 1:
-                if (neighbors[2] == false)
-                    newVectors = FlipTexture(newVectors, 1);
-                break;
-            case 2:
-                if (neighbors[1] == false)
-                    newVectors = FlipTexture(newVectors, 1);
-                break;
-            case 3:
-                if (neighbors[0] == false)
-                    newVectors = FlipTexture(newVectors, 1);
-                break;
-            case 4:
-                    newVectors = RotateTexture( newVectors, Random.Range(0,4) );
-                break;
+        if (_ground.HasAttributes("Slant") == true)
+        {
+            if (_ground.HasAttributes("Facing_E") == true)
+            {
+                if (_ground.neighbors[2] == true)
+                    newVectors = RotateTexture(newVectors, 3);
+                else
+                    newVectors = RotateTexture(newVectors, 1);
+            }
+            else if (_ground.HasAttributes("Facing_S") == true) {
+                if (_ground.neighbors[3] == true)
+                    newVectors = RotateTexture(newVectors, 0);
+                else
+                    newVectors = RotateTexture(newVectors, 2);
+            }
+            else if (_ground.HasAttributes("Facing_W") == true) {
+                if (_ground.neighbors[2] == true)
+                    newVectors = RotateTexture(newVectors, 3);
+                else
+                    newVectors = RotateTexture(newVectors, 1);
+            }
+            else if (_ground.HasAttributes("Facing_N") == true) {
+                if (_ground.neighbors[1] == true)
+                    newVectors = RotateTexture(newVectors, 2);
+            }
+
+        }
+        else {
+            switch (_face)
+            {
+                case 0:
+                    if (neighbors[3] == false)
+                        newVectors = FlipTexture(newVectors, 1);
+                    break;
+                case 1:
+                    if (neighbors[2] == false)
+                        newVectors = FlipTexture(newVectors, 1);
+                    break;
+                case 2:
+                    if (neighbors[1] == false)
+                        newVectors = FlipTexture(newVectors, 1);
+                    break;
+                case 3:
+                    if (neighbors[0] == false)
+                        newVectors = FlipTexture(newVectors, 1);
+                    break;
+                case 4:
+                    newVectors = RotateTexture(newVectors, Random.Range(0, 4));
+                    break;
+            }
         }
 
         return newVectors;

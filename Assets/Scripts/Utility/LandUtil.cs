@@ -8,7 +8,7 @@ public static class LandUtil
     // Getters and Setters
     public static GroundPiece GetGroundPiece(Land _land, int[] position) {
         if (position[0] < 0 || position[0] > _land.groundPieces.GetLength(0)-1 || position[1] < 0 || position[1] > _land.groundPieces.GetLength(1)-1 || position[2] < 0 || position[2] > _land.groundPieces.GetLength(2)-1)
-            return new GroundPiece(_land, new Vector3(position[0], position[1], position[2]), GroundPiece.GroundType.Empty);
+            return new GroundPiece(_land, new Vector3(position[0], position[1], position[2]), 0);
         else {
             return _land.groundPieces[position[0], position[1], position[2]];
         }
@@ -49,20 +49,20 @@ public static class LandUtil
         int y = (int)_groundPiece.position.y;
         int z = (int)_groundPiece.position.z;
 
-        if (GetGroundPiece(_groundPiece.Land, new int[3] { x, y, z + 1 }).Type != GroundPiece.GroundType.Empty && GetGroundPiece(_groundPiece.Land, new int[3] { x, y, z + 1 }).HasAttributes("Slant") != true )
+        if (GetGroundPiece(_groundPiece.Land, new int[3] { x, y, z + 1 }).id != 0 && GetGroundPiece(_groundPiece.Land, new int[3] { x, y, z + 1 }).HasAttributes("Slant") != true )
             _groundPiece.neighbors[0] = true;
-        if (GetGroundPiece(_groundPiece.Land, new int[3] { x + 1, y, z }).Type != GroundPiece.GroundType.Empty && GetGroundPiece(_groundPiece.Land, new int[3] { x + 1, y, z }).HasAttributes("Slant") != true )
+        if (GetGroundPiece(_groundPiece.Land, new int[3] { x + 1, y, z }).id != 0 && GetGroundPiece(_groundPiece.Land, new int[3] { x + 1, y, z }).HasAttributes("Slant") != true )
             _groundPiece.neighbors[1] = true;
-        if (GetGroundPiece(_groundPiece.Land, new int[3] { x, y, z - 1 }).Type != GroundPiece.GroundType.Empty && GetGroundPiece(_groundPiece.Land, new int[3] { x, y, z - 1 }).HasAttributes("Slant") != true )
+        if (GetGroundPiece(_groundPiece.Land, new int[3] { x, y, z - 1 }).id != 0 && GetGroundPiece(_groundPiece.Land, new int[3] { x, y, z - 1 }).HasAttributes("Slant") != true )
             _groundPiece.neighbors[2] = true;
-        if (GetGroundPiece(_groundPiece.Land, new int[3] { x - 1, y, z }).Type != GroundPiece.GroundType.Empty && GetGroundPiece(_groundPiece.Land, new int[3] { x - 1, y, z }).HasAttributes("Slant") != true )
+        if (GetGroundPiece(_groundPiece.Land, new int[3] { x - 1, y, z }).id != 0 && GetGroundPiece(_groundPiece.Land, new int[3] { x - 1, y, z }).HasAttributes("Slant") != true )
             _groundPiece.neighbors[3] = true;
-        if (GetGroundPiece(_groundPiece.Land, new int[3] { x, y + 1, z }).Type != GroundPiece.GroundType.Empty)
+        if (GetGroundPiece(_groundPiece.Land, new int[3] { x, y + 1, z }).id != 0)
             _groundPiece.neighbors[4] = true;
-        if (GetGroundPiece(_groundPiece.Land, new int[3] { x, y - 1, z }).Type != GroundPiece.GroundType.Empty)
+        if (GetGroundPiece(_groundPiece.Land, new int[3] { x, y - 1, z }).id != 0)
             _groundPiece.neighbors[5] = true;
 
-        if (_groundPiece.Type != GroundPiece.GroundType.Empty) {
+        if (_groundPiece.id != 0) {
             for (int i = 0; i < 4; i++)
             {
                 if (_groundPiece.neighbors[i] == false)
@@ -80,7 +80,7 @@ public static class LandUtil
 
         foreach (GroundPiece ground in _land.groundPieces)
         {
-            if (ground.Type == GroundPiece.GroundType.Empty)
+            if (ground.id == 0)
                 continue;
 
             if (ground.position.x == 0 || ground.position.x == (_land.groundPieces.GetLength(0) - 1))
@@ -93,7 +93,7 @@ public static class LandUtil
 
                 foreach (GroundPiece neighborGround in neighbors)
                 {
-                    if (neighborGround.Type == GroundPiece.GroundType.Empty)
+                    if (neighborGround.id == 0)
                     {
                         groundPieces.Add(ground);
                         break;
@@ -103,11 +103,11 @@ public static class LandUtil
         }
         return groundPieces.ToArray();
     }
-    public static void RemoveArea(Land _land, int xStart, int zStart, int xEnd, int zEnd) {
+    public static void RemoveBox(Land _land, int xStart, int zStart, int xEnd, int zEnd) {
         for (int x = xStart; x < xEnd; x++) {
             for (int z = zStart; z < zEnd; x++)
             {
-                _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                _land.groundPieces[x, _land.levelHeight, z].id = 0;
             }
         }
     }
@@ -118,7 +118,7 @@ public static class LandUtil
         for (int x = 0; x < _size.x; x++) {
             for (int z = 0; z < _size.z; z++) {
                 for (int y = 0; y < _size.y; y++) {
-                    _land.groundPieces[(int)_position.x + x, (int)_position.y + y, (int)_position.z + z].Type = GroundPiece.GroundType.Dirt;
+                    _land.groundPieces[(int)_position.x + x, (int)_position.y + y, (int)_position.z + z].id = 1;
                 }
             }
         }
@@ -141,7 +141,7 @@ public static class LandUtil
                 {
                     for (int z = 0; z < area.y; z++)
                     {
-                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                        _land.groundPieces[x, _land.levelHeight, z].id = 0;
                     }
                 }
                 xCount += (int)area.x;
@@ -152,7 +152,7 @@ public static class LandUtil
                 {
                     for (int z = zCount; z < zCount + area.y; z++)
                     {
-                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                        _land.groundPieces[x, _land.levelHeight, z].id = 0;
                     }
                 }
                 zCount += (int)area.y;
@@ -164,7 +164,7 @@ public static class LandUtil
                 {
                     for (int z = 0; z < area.y; z++)
                     {
-                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                        _land.groundPieces[x, _land.levelHeight, z].id = 0;
                     }
                 }
                 xCount = (int)area.x;
@@ -184,7 +184,7 @@ public static class LandUtil
                 {
                     for (int z = _land.ZSize - (int)area.y; z < _land.ZSize; z++)
                     {
-                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                        _land.groundPieces[x, _land.levelHeight, z].id = 0;
                     }
                 }
                 xCount += (int)area.x;
@@ -195,7 +195,7 @@ public static class LandUtil
                 {
                     for (int z = _land.ZSize - ((int)area.y + zCount); z < _land.ZSize; z++)
                     {
-                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                        _land.groundPieces[x, _land.levelHeight, z].id = 0;
                     }
                 }
                 zCount += (int)area.y;
@@ -208,7 +208,7 @@ public static class LandUtil
                 {
                     for (int z = _land.ZSize - (int)area.y; z < _land.ZSize; z++)
                     {
-                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                        _land.groundPieces[x, _land.levelHeight, z].id = 0;
                     }
                 }
                 xCount = (int)area.x;
@@ -228,7 +228,7 @@ public static class LandUtil
                 {
                     for (int z = _land.ZSize - (int)area.y; z < _land.ZSize; z++)
                     {
-                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                        _land.groundPieces[x, _land.levelHeight, z].id = 0;
                     }
                 }
                 xCount += (int)area.x;
@@ -239,7 +239,7 @@ public static class LandUtil
                 {
                     for (int z = _land.ZSize - ((int)area.y + zCount); z < _land.ZSize; z++)
                     {
-                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                        _land.groundPieces[x, _land.levelHeight, z].id = 0;
                     }
                 }
                 zCount += (int)area.y;
@@ -252,7 +252,7 @@ public static class LandUtil
                 {
                     for (int z = _land.ZSize - (int)area.y; z < _land.ZSize; z++)
                     {
-                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                        _land.groundPieces[x, _land.levelHeight, z].id = 0;
                     }
                 }
                 xCount = (int)area.x;
@@ -272,7 +272,7 @@ public static class LandUtil
                 {
                     for (int z = 0; z < area.y; z++)
                     {
-                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                        _land.groundPieces[x, _land.levelHeight, z].id = 0;
                     }
                 }
                 xCount += (int)area.x;
@@ -283,7 +283,7 @@ public static class LandUtil
                 {
                     for (int z = zCount; z < area.y + zCount; z++)
                     {
-                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                        _land.groundPieces[x, _land.levelHeight, z].id = 0;
                     }
                 }
                 zCount += (int)area.y;
@@ -296,7 +296,7 @@ public static class LandUtil
                 {
                     for (int z = 0; z < area.y; z++)
                     {
-                        _land.groundPieces[x, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                        _land.groundPieces[x, _land.levelHeight, z].id = 0;
                     }
                 }
                 xCount = (int)area.x;
@@ -317,7 +317,7 @@ public static class LandUtil
             int cutDepth = Mathf.FloorToInt( Mathf.PerlinNoise((x * scale) + randomX, randomY) * (_cutDepth + 1) );
 
             for (int depth = 0; depth < cutDepth; depth++) {
-                _land.groundPieces[x, _land.levelHeight, _land.ZSize - (depth + 1)].Type = GroundPiece.GroundType.Empty;
+                _land.groundPieces[x, _land.levelHeight, _land.ZSize - (depth + 1)].id = 0;
             }
         }
         randomX = Random.Range(0f, 1f);
@@ -328,7 +328,7 @@ public static class LandUtil
 
             for (int depth = 0; depth < cutDepth; depth++)
             {
-                _land.groundPieces[_land.XSize - (depth + 1), _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                _land.groundPieces[_land.XSize - (depth + 1), _land.levelHeight, z].id = 0;
             }
         }
         randomX = Random.Range(0f, 1f);
@@ -339,7 +339,7 @@ public static class LandUtil
 
             for (int depth = 0; depth < cutDepth; depth++)
             {
-                _land.groundPieces[x, _land.levelHeight, depth].Type = GroundPiece.GroundType.Empty;
+                _land.groundPieces[x, _land.levelHeight, depth].id = 0;
             }
         }
         randomX = Random.Range(0f, 1f);
@@ -350,7 +350,7 @@ public static class LandUtil
 
             for (int depth = 0; depth < cutDepth; depth++)
             {
-                _land.groundPieces[depth, _land.levelHeight, z].Type = GroundPiece.GroundType.Empty;
+                _land.groundPieces[depth, _land.levelHeight, z].id = 0;
             }
         }
     }
@@ -363,13 +363,13 @@ public static class LandUtil
             bool neighborFound = false;
 
             foreach (GroundPiece neighborGround in neighbors) {
-                if (neighborGround.Type != GroundPiece.GroundType.Empty) {
+                if (neighborGround.id != 0) {
                     neighborFound = true;
                     break;
                 }
             }
             if (neighborFound == false)
-                ground.Type = GroundPiece.GroundType.Empty;
+                ground.id = 0;
 
         }
     }
@@ -384,9 +384,9 @@ public static class LandUtil
                     counter++;
             }
             if (counter <= 1)
-                ground.Type = GroundPiece.GroundType.Empty;
+                ground.id = 0;
             else if (counter == 4)
-                ground.Type = GroundPiece.GroundType.Dirt;
+                ground.id = 1;
         }
     }
     public static void ElevateLand(Land _land, int elevationMax, float _scale = .04f) {
@@ -396,13 +396,13 @@ public static class LandUtil
 
         for (int x = 0; x < _land.XSize; x++) {
             for (int z = 0; z < _land.ZSize; z++) {
-                if (_land.groundPieces[x, _land.levelHeight, z].Type == GroundPiece.GroundType.Empty)
+                if (_land.groundPieces[x, _land.levelHeight, z].id == 0)
                     continue;
 
                 int heightValue = Mathf.FloorToInt( Mathf.PerlinNoise( (x * scale) + randomX, (z * scale) + randomY) * (elevationMax + 1) );
 
                 for (int i = _land.levelHeight + 1; i < _land.levelHeight + heightValue; i++)
-                    _land.groundPieces[x, i, z].Type = GroundPiece.GroundType.Dirt;
+                    _land.groundPieces[x, i, z].id = 1;
             }
         }
     }

@@ -63,15 +63,13 @@ public class Chunk_gameobj : MonoBehaviour
         int xOffset = chunkData.xPosition * 32;
         int zOffset = chunkData.zPosition * 32;
 
-        GroundPiece.GroundType[] groundTypes = new GroundPiece.GroundType[1] { GroundPiece.GroundType.Empty};
-
         for (int x = 0; x < 32; x++)
         {
             for (int y = 0; y < 16; y++)
             {
                 for (int z = 0; z < 32; z++)
                 {
-                    if (chunkData.groundPieces[x, y, z].Type != GroundPiece.GroundType.Empty)
+                    if (chunkData.groundPieces[x, y, z].id != 0)
                     {
                         GroundPiece ground = chunkData.groundPieces[x, y, z];
                         //GroundPiece[] neighbors = LandUtil.GetNeighborGroundPieces(ground);
@@ -174,8 +172,10 @@ public class Chunk_gameobj : MonoBehaviour
         List<GroundPiece> groundGrassEdges = new List<GroundPiece>();
 
         foreach (GroundPiece ground in chunkData.groundPieces) {
-            if (ground.Type == GroundPiece.GroundType.Dirt && ground.HasAttributes(new string[1] { "Edge" }) == true && ground.neighbors[4] == false)
-                groundGrassEdges.Add(ground);
+            if (ground.id != 0 && ground.id != 2) {
+                if (ground.HasAttributes("Edge") == true && ground.neighbors[4] == false)
+                    groundGrassEdges.Add(ground);
+            }
         }
 
         GameObject[] newEdgeDetails = MeshUtil.GenerateGrassEdges(groundGrassEdges.ToArray(), gameObject);
@@ -191,7 +191,7 @@ public class Chunk_gameobj : MonoBehaviour
 
         foreach (GroundPiece ground in chunkData.groundPieces)
         {
-            if ( ground.Type == GroundPiece.GroundType.Path )
+            if ( ground.id == 2 )
                 pathEdges.Add(ground);
         }
 

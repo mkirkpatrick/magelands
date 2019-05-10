@@ -13,11 +13,9 @@ public class GroundPiece {
     }
 
     public Chunk chunkParent;
-
-    public enum GroundType { Empty, Surrounded, Dirt, Path };
  
-    private GroundType type;
-    public GroundType Type { get; set; }
+    public int id;
+    public int[] subIDs;
 
     public Vector3 position;
 
@@ -26,10 +24,10 @@ public class GroundPiece {
 
     public List<GroundDecoration> decorations;
 
-    public GroundPiece(Land _land, Vector3 _position, GroundType _groundType) {
+    public GroundPiece(Land _land, Vector3 _position, int _id) {
         land = _land;
         position = _position;
-        type = _groundType;
+        id = _id;
         neighbors = new bool[6];
 
         decorations = new List<GroundDecoration>();
@@ -48,14 +46,22 @@ public class GroundPiece {
             return false;
 
     }
-    public bool HasAttributes(string[] _attributes) {
-        bool hasAttributes = true;
+    public bool HasAttributes(string[] _attributes, bool allMatches = true) {
+        bool hasAttributes = false;
 
         foreach (string s in _attributes) {
-            if (attributes.Contains(s) == false) {
+            if (attributes.Contains(s) == false && allMatches == true)
+            {
                 hasAttributes = false;
                 break;
-            }     
+            }
+            else if (attributes.Contains(s) == true && allMatches == false)
+            {
+                hasAttributes = true;
+                break;
+            }
+            else
+                hasAttributes = true;
         }
         return hasAttributes;
     }

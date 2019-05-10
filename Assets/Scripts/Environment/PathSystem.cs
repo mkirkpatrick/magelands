@@ -193,22 +193,27 @@ public class PathSystem
         while (smoothed == true) {
             smoothed = false;
 
-            for (int x = 0; x < _land.XSize; x++) {
-                for (int z = 0; z < _land.ZSize; z++) {
-                    if (pathMap[x,z] == 1) {
-                        int[] heightNeighbors = HeightMapUtil.GetMapNeighbors(_land.heightMap, new int[2] { x, z });
-                        int currentHeight = _land.heightMap[x, z];
+            int[] heightNeighbors;
+            int currentHeight;
 
-                        if ( (heightNeighbors[0] < currentHeight && heightNeighbors[2] < currentHeight) || (heightNeighbors[1] < currentHeight && heightNeighbors[3] < currentHeight))
-                            _land.heightMap[x, z] -= 1;
+            for (int x = 0; x < _land.XSize; x++)
+            {
+                for (int z = 0; z < _land.ZSize; z++)
+                {
+                    if (pathMap[x, z] == 1)
+                    {
+                        heightNeighbors = HeightMapUtil.GetMapNeighbors(_land.heightMap, new int[2] { x, z });
+                        currentHeight = _land.heightMap[x, z];
 
-                        if ( z != _land.ZSize - 1) {
-                            if (_land.heightMap[x, z] - _land.heightMap[x, z + 1] >= 2 && _land.heightMap[x, z + 1] != 0) {
+                        if (z != _land.ZSize - 1)
+                        {
+                            if (_land.heightMap[x, z] - _land.heightMap[x, z + 1] >= 2 && _land.heightMap[x, z + 1] != 0)
+                            {
                                 _land.heightMap[x, z] -= 1;
                                 smoothed = true;
-                            }   
+                            }
                         }
-                        if ( x != _land.XSize - 1)
+                        if (x != _land.XSize - 1)
                         {
                             if (_land.heightMap[x, z] - _land.heightMap[x + 1, z] >= 2 && _land.heightMap[x + 1, z] != 0)
                             {
@@ -216,27 +221,49 @@ public class PathSystem
                                 smoothed = true;
                             }
                         }
-                        if ( z != 0)
+                        if (z != 0)
                         {
-                            if (_land.heightMap[x, z] - _land.heightMap[x, z - 1] >= 2 && _land.heightMap[x, z - 1] != 0) {
+                            if (_land.heightMap[x, z] - _land.heightMap[x, z - 1] >= 2 && _land.heightMap[x, z - 1] != 0)
+                            {
                                 _land.heightMap[x, z] -= 1;
                                 smoothed = true;
                             }
-                                
                         }
-                        if ( x != 0)
+                        if (x != 0)
                         {
-                            if (_land.heightMap[x, z] - _land.heightMap[x - 1, z] >= 2 && _land.heightMap[x - 1, z] != 0) {
+                            if (_land.heightMap[x, z] - _land.heightMap[x - 1, z] >= 2 && _land.heightMap[x - 1, z] != 0)
+                            {
                                 _land.heightMap[x, z] -= 1;
                                 smoothed = true;
-                            }     
+                            }
                         }
                     }
                 }
-            }              
+            }
+            for (int x = 0; x < _land.XSize; x++)
+            {
+                for (int z = 0; z < _land.ZSize; z++)
+                {
+                    if (pathMap[x, z] == 1)
+                    {
+                        heightNeighbors = HeightMapUtil.GetMapNeighbors(_land.heightMap, new int[2] { x, z });
+                        currentHeight = _land.heightMap[x, z];
+
+                        int counter = 0;
+                        for (int i = 0; i < 4; i++)
+                        {
+                            if (heightNeighbors[i] < currentHeight)
+                                counter++;
+                        }
+                        if (counter >= 2)
+                        {
+                            _land.heightMap[x, z] -= 1;
+                            smoothed = true;
+                        }
+                    }
+                }
+            }            
         }
-
-
     }
 
     [System.Serializable]

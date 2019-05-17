@@ -22,6 +22,7 @@ public static class LandCreator
 
         //Second pass for areas now including path data
         GenerateAdvancedAreas(newLand);
+        GenerateBorderDetail(newLand);
 
         AssignGroundIDs(newLand);
         
@@ -219,6 +220,23 @@ public static class LandCreator
         }
     }
 
+    static void GenerateBorderDetail(Land _land) {
+        foreach (Area area in _land.areas) {
+            for (int x = 0; x < area.size[0]; x++) {
+                for (int y = 0; y < area.size[1]; y++) {
+                    if (area.areaMap[x, y] == 2) {
+                        int xPos = area.position[0] + x;
+                        int yPos = area.position[1] + y;
+
+                        float perlinValue = Mathf.PerlinNoise((float)xPos * .04f, (float)yPos * .04f);
+
+                        int heightValue = Mathf.CeilToInt( perlinValue * 3 );
+                        _land.heightMap[xPos, yPos] += heightValue;
+                    }
+                }
+            }
+        }
+    }
     static void GenerateMountains(Land _land) {
         foreach (GroundPiece ground in _land.groundPieces)
         {
